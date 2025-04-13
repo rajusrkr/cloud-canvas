@@ -1,20 +1,32 @@
-import mongoose from "mongoose";
+import dotenv from "dotenv";
 import express from "express"
 import http from "http"
 import { WebSocket } from "ws";
+import { db } from "./db";
+import cors from "cors"
+dotenv.config()
+
 const app = express()
+app.use(cors({
+    origin: "http://localhost:5175"
+}))
 
 const server = http.createServer(app)
-
 const webSocket = new WebSocket.Server({server})
 
-webSocket.on("connection", (ws) => {
+webSocket.on("connection", async (ws) => {
     console.log("new connection...");
     // on message
-    ws.on("message", (ms) => {
+    ws.on("message", async (ms) => {
         try {
             const message = JSON.parse(ms.toString())
-            console.log(message);
+            console.log(message.canvasId);
+
+            const update = await Canvas.findByIdAndUpdate(message.canvasId, {
+                canvasElements: message.data
+            })
+            console.log(update);
+            
         } catch (error) {
             console.log(error);
         }
@@ -34,7 +46,18 @@ webSocket.on("connection", (ws) => {
     }))
 })
 
+db()
+  .then(() => {
+    server.listen(5000, () => {
+      console.log(`Server is listening on port: 5000`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
-server.listen(5000, () => {
-    console.log(`server is listening...., port 5000`);
-})
+import canvasRouter from "./routes/canvas.route"
+import { Canvas } from "./db/models/canvas.model";
+app.use("/api/v1", canvasRouter)
+
+

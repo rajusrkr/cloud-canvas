@@ -4,10 +4,12 @@ import "@excalidraw/excalidraw/index.css";
 import { useState } from "react";
 import useWebSocket from "react-use-websocket";
 import {isEqual} from "lodash"
+import { useParams } from "react-router";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>()
-  console.log(canvasElements);
+  const params = useParams()
+  
   
 
   // ws connection
@@ -33,7 +35,8 @@ const Canvas = () => {
 
         sendJsonMessage({
             type: "New drawings",
-            data: canvasElements
+            data: canvasElements,
+            canvasId: params.id
         })
     }
 
