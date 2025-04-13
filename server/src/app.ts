@@ -3,6 +3,7 @@ import express from "express"
 import http from "http"
 import { WebSocket } from "ws";
 import { db } from "./db";
+import { Canvas } from "./db/models/canvas.model";
 import cors from "cors"
 dotenv.config()
 
@@ -57,7 +58,7 @@ db()
   });
 
 import canvasRouter from "./routes/canvas.route"
-import { Canvas } from "./db/models/canvas.model";
 app.use("/api/v1", canvasRouter)
 
-
+import userRouter from "./routes/user.route"
+app.use("/api/v1", userRouter)
