@@ -19,6 +19,8 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const onsubmit: SubmitHandler<FormFields> = async (data) => {
+    console.log(data);
+    
     try {
       const res = await fetch(`${BACKEND_URI}/api/v1/user/signup`, {
         method: "POST",
@@ -31,7 +33,7 @@ export default function Signup() {
       const response = await res.json();
 
       if (response.success) {
-        navigate("/auth/signin");
+        navigate("/signin");
       }
     } catch (error) {}
   };

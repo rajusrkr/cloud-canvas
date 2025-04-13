@@ -1,10 +1,11 @@
+import { Request } from "express";
 import { db } from "../db";
 import { User } from "../db/models/user.model";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 //signup
-const signup = async (req: any, res: any) => {
+const signup = async (req: Request, res: any) => {
     const { data } = req.body;
   
     try {
@@ -35,7 +36,7 @@ const signup = async (req: any, res: any) => {
     }
   };
   //signin
-  const signin = async (req: any, res: any) => {
+  const signin = async (req: Request, res: any) => {
     const { data } = req.body;
   
     try {

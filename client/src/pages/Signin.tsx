@@ -21,7 +21,7 @@ export default function Signin() {
 
   const onsubmit: SubmitHandler<FormFields> = async (data) => {
     try {
-      const res = await fetch(`${BACKEND_URI}/api/v1/signin`, {
+      const res = await fetch(`${BACKEND_URI}/api/v1/user/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export default function Signin() {
       const response = await res.json();
       if (response.success) {
         navigate(`/dashboard/${response.username}`);
-        Cookies.set("_better_excalidraw_auth_", response.token, {
+        Cookies.set("canvas_cloud_auth", response.token, {
           // secure: true,
           // domain: "excalidraw-cloud.vercel.app",
           // expires: 5 * 60 * 1000,

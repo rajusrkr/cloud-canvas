@@ -4,13 +4,19 @@ import http from "http"
 import { WebSocket } from "ws";
 import { db } from "./db";
 import { Canvas } from "./db/models/canvas.model";
+import cookiesParser from "cookie-parser"
 import cors from "cors"
 dotenv.config()
 
 const app = express()
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
 }))
+
+app.use(cookiesParser())
+app.use(express.json())
 
 const server = http.createServer(app)
 const webSocket = new WebSocket.Server({server})
