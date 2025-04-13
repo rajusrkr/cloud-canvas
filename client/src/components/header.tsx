@@ -3,7 +3,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 export default function Header() {
   return (
-    <div className=" bg-gray-100 dark:bg-gray-950">
+    <div className=" bg-gray-100 dark:bg-gray-950 border border-b-white/20 shadow">
       <div className="mx-auto max-w-7xl flex justify-between px-4 items-center h-14">
         <div>
           <h2 className="text-3xl font-bold">Cloud Canvas</h2>
