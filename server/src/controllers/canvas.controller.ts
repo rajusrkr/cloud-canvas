@@ -17,4 +17,25 @@ const create = async (req: Request, res: any) => {
   }
 };
 
-export { create };
+const fetch = async (req: Request, res:any) => {
+    const urlParams = req.query
+    console.log(urlParams.canvasId);
+
+
+    try {
+        const getCanvasData = await Canvas.findById(urlParams.canvasId)
+        console.log(getCanvasData);
+        return res.status(200).json({
+            success: true,
+            message: "Fetch",
+            canvasElements: getCanvasData
+        })
+    } catch (error) {
+        
+    }
+
+
+    
+}
+
+export { create, fetch };

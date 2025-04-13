@@ -7,6 +7,7 @@ const Home = () => {
   return (
     <div>
         <button
+        className="bg-blue-400"
         onClick={async () => {
             const sendReq = await fetch("http://localhost:5000/api/v1/canvas/create", {
                 method: "POST",
