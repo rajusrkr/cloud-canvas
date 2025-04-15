@@ -1,10 +1,6 @@
 {
     "rewrites": [
       {
-        "source": "/api/:path*",  
-        "destination": "https://better-excalidraw-2.onrender.com/:path*"  
-      },
-      {
         "source": "/(.*)",  
         "destination": "/index.html"  
       }
