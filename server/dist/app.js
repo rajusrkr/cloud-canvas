@@ -21,11 +21,15 @@ const canvas_model_1 = require("./db/models/canvas.model");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
+const PORT = process.env.PORT;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: "http://localhost:5173",
+    origin: [
+        "https://cloud-canvas.vercel.app",
+        "http://localhost:5173"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+    credentials: true,
 }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
@@ -39,7 +43,7 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
             const message = JSON.parse(ms.toString());
             console.log(message.canvasId);
             const update = yield canvas_model_1.Canvas.findByIdAndUpdate(message.canvasId, {
-                canvasElements: message.data
+                canvasElements: message.data,
             });
             console.log(update);
         }
@@ -58,13 +62,13 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
     // send
     ws.send(JSON.stringify({
         type: "Connection_ack",
-        message: "ws connection success"
+        message: "ws connection success",
     }));
 }));
 (0, db_1.db)()
     .then(() => {
-    server.listen(5000, () => {
-        console.log(`Server is listening on port: 5000`);
+    server.listen(PORT, () => {
+        console.log(`Server is listening on port: ${PORT}`);
     });
 })
     .catch((error) => {

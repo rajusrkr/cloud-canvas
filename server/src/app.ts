@@ -12,7 +12,10 @@ const PORT = process.env.PORT
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://cloud-canvas.vercel.app"],
+    origin: [
+      "https://cloud-canvas.vercel.app",
+      "http://localhost:5173"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
