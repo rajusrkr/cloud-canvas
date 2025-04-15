@@ -31,7 +31,7 @@ const Canvas = () => {
   
 
   // ws connection
-  const { sendJsonMessage } = useWebSocket(`ws://${BACKEND_URI}`, {
+  const { sendJsonMessage } = useWebSocket(`wss://cloud-canvas.onrender.com`, {
     onMessage: (e) => {
         try {
             const data = JSON.parse(e.data)
