@@ -1,9 +1,8 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-import Cookies from "js-cookie";
-import { BACKEND_URI } from "@/utils/config";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useCloudCanvasUserStore } from "@/store/user_store";
 
 interface FormFields {
   email: string;
@@ -11,6 +10,7 @@ interface FormFields {
 }
 
 export default function Signin() {
+  const { signin } = useCloudCanvasUserStore();
   const {
     register,
     handleSubmit,
@@ -20,28 +20,10 @@ export default function Signin() {
   const navigate = useNavigate();
 
   const onsubmit: SubmitHandler<FormFields> = async (data) => {
-    try {
-      const res = await fetch(`${BACKEND_URI}/api/v1/user/signin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data }),
-        credentials: "include",
-      });
-
-      const response = await res.json();
-      if (response.success) {
-        navigate(`/dashboard/${response.username}`);
-        Cookies.set("canvas_cloud_auth", response.token, {
-          // secure: true,
-          // domain: "excalidraw-cloud.vercel.app",
-          // expires: 5 * 60 * 1000,
-          // sameSite: "Lax",
-        });
-      }
-    } catch (error) {
-      console.log(error);
+    await signin({ email: data.email, password: data.password });
+    // if user is authenticated
+    if (useCloudCanvasUserStore.getState().isUserAuthenticated) {
+      navigate(`/dashboard/${useCloudCanvasUserStore.getState().userName}`);
     }
   };
   return (

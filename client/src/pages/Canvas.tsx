@@ -30,7 +30,7 @@ const Canvas = () => {
   }, [params.id])
   
 
-  // ws connection
+  // ws connection for render
   const { sendJsonMessage } = useWebSocket(`wss://cloud-canvas.onrender.com`, {
     onMessage: (e) => {
         try {
@@ -41,6 +41,8 @@ const Canvas = () => {
         }
     }
   })
+
+
 
   
   // handle canvas change

@@ -21,7 +21,7 @@ const canvas_model_1 = require("./db/models/canvas.model");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: [
