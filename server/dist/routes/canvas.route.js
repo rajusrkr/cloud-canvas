@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const canvas_controller_1 = require("../controllers/canvas.controller");
+const userSession_1 = require("../middlewares/userSession");
+const router = (0, express_1.Router)();
+router.post("/canvas/create", userSession_1.userSession, canvas_controller_1.create);
+router.put("/canvas/fetch", canvas_controller_1.fetch);
+router.get("/canvas/get-all-canvas", userSession_1.userSession, canvas_controller_1.fetchCanvasIdsAndName);
+router.delete("/canvas/delete", userSession_1.userSession, canvas_controller_1.deleteCanvas);
+exports.default = router;
