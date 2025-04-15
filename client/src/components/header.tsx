@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import Cookies from "js-cookie";
+import { BACKEND_URI } from "@/utils/config";
 
 export default function Header() {
   const currentPath = useLocation();
@@ -30,7 +31,7 @@ export default function Header() {
               onClick={async () => {
                 try {
                   const sendReq = await fetch(
-                    "http://localhost:5000/api/v1/canvas/create",
+                    `${BACKEND_URI}/api/v1/canvas/create`,
                     {
                       method: "POST",
                       headers: {

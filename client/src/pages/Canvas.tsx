@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import {isEqual} from "lodash"
 import { useParams } from "react-router";
+import { BACKEND_URI } from "@/utils/config";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>()
@@ -15,7 +16,7 @@ const Canvas = () => {
   useEffect(() => {
       (async () => {
         setLoading(true)
-        const sendReq = await fetch(`http://localhost:5000/api/v1/canvas/fetch?canvasId=${params.id}`, {
+        const sendReq = await fetch(`${BACKEND_URI}/api/v1/canvas/fetch?canvasId=${params.id}`, {
             method: "PUT"
         })
 
@@ -30,7 +31,7 @@ const Canvas = () => {
   
 
   // ws connection
-  const { sendJsonMessage } = useWebSocket("ws://localhost:5000", {
+  const { sendJsonMessage } = useWebSocket(`ws://${BACKEND_URI}`, {
     onMessage: (e) => {
         try {
             const data = JSON.parse(e.data)

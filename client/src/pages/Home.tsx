@@ -1,3 +1,4 @@
+import { BACKEND_URI } from "@/utils/config"
 import { useNavigate } from "react-router"
 
 const Home = () => {
@@ -9,7 +10,7 @@ const Home = () => {
         <button
         className="bg-blue-400"
         onClick={async () => {
-            const sendReq = await fetch("http://localhost:5000/api/v1/canvas/create", {
+            const sendReq = await fetch(`${BACKEND_URI}/api/v1/canvas/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
