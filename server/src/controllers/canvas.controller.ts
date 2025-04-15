@@ -2,40 +2,79 @@ import { Request } from "express";
 import { Canvas } from "../db/models/canvas.model";
 
 const create = async (req: Request, res: any) => {
-    
+  //@ts-ignore
+  const user = req.userId;
+
   try {
     const createNewCanvas = await Canvas.create({
-        canvasElements: []
+      canvasElements: [],
+      canvasName: `untitled-${new Date().getTime()}`,
+      canvasCreatedBy: user,
     });
     return res.status(200).json({
-        success: true,
-        message: "Canvas created",
-        canvasId: createNewCanvas._id
-    })
+      success: true,
+      message: "Canvas created",
+      canvasId: createNewCanvas._id,
+    });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error, please try again...",
+    });
   }
 };
 
-const fetch = async (req: Request, res:any) => {
-    const urlParams = req.query
-    console.log(urlParams.canvasId);
+const fetch = async (req: Request, res: any) => {
+  const urlParams = req.query;
+  try {
+    const getCanvasData = await Canvas.findById(urlParams.canvasId);
+    if (!getCanvasData) {
+      return res.status({
+        success: false,
+        message: "Canvas not found with provied id",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Fetch",
+      canvasElements: getCanvasData,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error, please try again.",
+    });
+  }
+};
 
+const fetchCanvasIdsAndName = async (req: Request, res: any) => {
+  //@ts-ignore
+  const user = req.userId;
 
-    try {
-        const getCanvasData = await Canvas.findById(urlParams.canvasId)
-        console.log(getCanvasData);
-        return res.status(200).json({
-            success: true,
-            message: "Fetch",
-            canvasElements: getCanvasData
-        })
-    } catch (error) {
-        
+  try {
+    const getCanvases = await Canvas.find({ canvasCreatedBy: user });
+
+    if (getCanvases.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No canvas/s found",
+      });
     }
 
+    return res.status(200).json({
+      success: true,
+      message: "Canvases fetched",
+      canvases: getCanvases,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
-    
-}
-
-export { create, fetch };
+export { create, fetch, fetchCanvasIdsAndName };

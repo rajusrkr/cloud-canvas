@@ -5,6 +5,14 @@ const CanvasSchema = new Schema({
       type: [],
       default: null,
     },
+    canvasName: {
+      type: String,
+      required: true
+    },
+    canvasCreatedBy: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );
