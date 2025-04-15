@@ -1,3 +1,4 @@
+import DashboardActionButton from "@/components/dashboard-action-button";
 import {
   Table,
   TableBody,
@@ -8,55 +9,21 @@ import {
 } from "@/components/ui/table";
 import { BACKEND_URI } from "@/utils/config";
 import Cookies from "js-cookie";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+interface Canvas {
+  canvasElements: string[];
+  canvasName: string;
+  updatedAt: string;
+  _id: string;
+}
 
 export default function Dashboard() {
   const cookie = Cookies.get("canvas_cloud_auth");
+  const navigate = useNavigate();
+
+  const [allCanvas, setAllCanvas] = useState<Canvas[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -71,7 +38,11 @@ export default function Dashboard() {
         }
       );
 
-      console.log(await sendReq.json());
+      const res = await sendReq.json();
+
+      if (res.success) {
+        setAllCanvas(res.canvases);
+      }
     })();
   }, []);
 
@@ -86,12 +57,24 @@ export default function Dashboard() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+        {allCanvas.map((canvas, index) => (
+          <TableRow
+            key={canvas._id}
+            className="hover:shadow transition-all hover:bg-yellow-100 dark:hover:bg-yellow-950"
+          >
+            <TableCell className="font-medium">{index + 1}</TableCell>
+            <TableCell
+              className="hover:cursor-pointer hover:underline underline-offset-2"
+              onClick={() => {
+                navigate(`/canvas/${canvas._id}`);
+              }}
+            >
+              {canvas.canvasName}
+            </TableCell>
+            <TableCell>{canvas.updatedAt}</TableCell>
+            <TableCell className="text-right">
+              <DashboardActionButton canvasId={canvas._id} authCookie={cookie!} allCanvas={allCanvas}/>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { Canvas } from "../db/models/canvas.model";
 
+// create a new canvas
 const create = async (req: Request, res: any) => {
   //@ts-ignore
   const user = req.userId;
@@ -24,7 +25,40 @@ const create = async (req: Request, res: any) => {
     });
   }
 };
+// delete a canvas by id
+const deleteCanvas = async (req: Request, res: any) => {
+  const urlParams = req.query;
+  const canvasId = urlParams.canvasId;
 
+  //@ts-ignore
+  const user = req.userId;
+
+  try {
+    const deleteCanvas = await Canvas.findOneAndDelete(
+      { _id: canvasId },
+      { createdBy: user }
+    );
+    if (typeof  deleteCanvas !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to delete"
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Deleted successfully"
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error."
+    })
+  }
+};
+// fetch a specific canvas by id
 const fetch = async (req: Request, res: any) => {
   const urlParams = req.query;
   try {
@@ -48,13 +82,15 @@ const fetch = async (req: Request, res: any) => {
     });
   }
 };
-
+// fetch all canvas for a perticular user
 const fetchCanvasIdsAndName = async (req: Request, res: any) => {
   //@ts-ignore
   const user = req.userId;
 
   try {
-    const getCanvases = await Canvas.find({ canvasCreatedBy: user });
+    const getCanvases = await Canvas.find({ canvasCreatedBy: user }).select(
+      "-createdAt -canvasCreatedBy"
+    );
 
     if (getCanvases.length === 0) {
       return res.status(400).json({
@@ -77,4 +113,4 @@ const fetchCanvasIdsAndName = async (req: Request, res: any) => {
   }
 };
 
-export { create, fetch, fetchCanvasIdsAndName };
+export { create, fetch, fetchCanvasIdsAndName, deleteCanvas };
