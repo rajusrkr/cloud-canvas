@@ -33,12 +33,10 @@ webSocket.on("connection", async (ws) => {
   ws.on("message", async (ms) => {
     try {
       const message = JSON.parse(ms.toString());
-      console.log(message.canvasId);
-
-      const update = await Canvas.findByIdAndUpdate(message.canvasId, {
+      await Canvas.findByIdAndUpdate(message.canvasId, {
         canvasElements: message.data,
       });
-      console.log(update);
+      
     } catch (error) {
       console.log(error);
     }
