@@ -6,6 +6,7 @@ import useWebSocket from "react-use-websocket";
 import {isEqual} from "lodash"
 import { useParams } from "react-router";
 import { BACKEND_URI } from "@/utils/config";
+import { Loader } from "lucide-react";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>()
@@ -44,8 +45,6 @@ const Canvas = () => {
 
   // for local
 
-
-  
   // handle canvas change
   const handleChange = async (drawings: string[] | any) => {
     const drawingCopy = drawings.map((drawing: string[] | any) => ({
@@ -66,8 +65,8 @@ const Canvas = () => {
 
   if (loading) {
     return (
-        <div>
-            <p>Loding.....</p>
+        <div className="flex justify-center items-center min-h-[30vh]">
+            <Loader className="animate-spin"/>
         </div>
     )
   }

@@ -15,6 +15,8 @@ interface CanvasNamesAndIds {
   isError: boolean;
   isEditingName: boolean;
   isNameEditingSuccess: boolean;
+  isCanvasDeleting: boolean;
+  isCanvasDeleted: boolean;
   errorMessage: null | string;
   canvasIdsAndNames: CanvasNameAndId[];
   // fetch all canvases
@@ -30,7 +32,13 @@ interface CanvasNamesAndIds {
     authCookie: string;
   }) => Promise<void>;
   // delete canvas
-  
+  deleteCanvas: ({
+    authCookie,
+    canvasId,
+  }: {
+    authCookie: string;
+    canvasId: string;
+  }) => Promise<void>;
 }
 
 const useCloudCanvasCanvasNamesAndIds = create(
@@ -41,6 +49,8 @@ const useCloudCanvasCanvasNamesAndIds = create(
       errorMessage: null,
       isEditingName: false,
       isNameEditingSuccess: false,
+      isCanvasDeleted: false,
+      isCanvasDeleting: false,
       canvasIdsAndNames: [],
       fetchCanvas: async ({ authCookie }) => {
         set({ isLoading: true, isError: false, errorMessage: null });
@@ -79,7 +89,12 @@ const useCloudCanvasCanvasNamesAndIds = create(
         }
       },
       editCanvasName: async ({ id, newName, authCookie }) => {
-        set({ isEditingName: true, isError: false, isNameEditingSuccess: false, errorMessage: null });
+        set({
+          isEditingName: true,
+          isError: false,
+          isNameEditingSuccess: false,
+          errorMessage: null,
+        });
 
         const data = {
           newName,
@@ -110,13 +125,13 @@ const useCloudCanvasCanvasNamesAndIds = create(
               };
               return { canvasIdsAndNames: update };
             });
-            set({ isEditingName: false, isNameEditingSuccess: true, });
+            set({ isEditingName: false, isNameEditingSuccess: true });
           } else {
             set({
               isEditingName: false,
               isError: true,
               errorMessage: res.message,
-              isNameEditingSuccess: false
+              isNameEditingSuccess: false,
             });
           }
         } catch (error) {
@@ -127,6 +142,36 @@ const useCloudCanvasCanvasNamesAndIds = create(
             errorMessage: "Something is broken",
           });
         }
+      },
+      deleteCanvas: async ({ authCookie, canvasId }) => {
+        set({
+          isCanvasDeleted: false,
+          isCanvasDeleting: false,
+          isError: false,
+          errorMessage: null,
+        });
+
+        try {
+          const sendReq = await fetch(
+            `${BACKEND_URI}/api/v1/canvas/delete?canvasId=${canvasId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: authCookie,
+              },
+            }
+          );
+          const res = await sendReq.json();
+          if (res.success) {
+            const filter = useCloudCanvasCanvasNamesAndIds
+              .getState()
+              .canvasIdsAndNames.filter((canvas) => canvas._id !== canvasId);
+
+            useCloudCanvasCanvasNamesAndIds.setState(() => {
+              return { canvasIdsAndNames: filter };
+            });
+          }
+        } catch (error) {}
       },
     }),
     { name: "cloud_canvas_canvas_names_ids" }

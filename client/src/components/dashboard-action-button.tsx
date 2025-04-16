@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
-import { BACKEND_URI } from "@/utils/config";
 import {
   EllipsisVertical,
   ExternalLink,
@@ -38,7 +37,7 @@ export default function DashboardActionButton({
   authCookie: string;
 }) {
   const navigate = useNavigate();
-  const { editCanvasName } = useCloudCanvasCanvasNamesAndIds();
+  const { editCanvasName, deleteCanvas } = useCloudCanvasCanvasNamesAndIds();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -79,20 +78,7 @@ export default function DashboardActionButton({
             {/* DELETE CANVAS */}
             <DropdownMenuItem
               onClick={async () => {
-                try {
-                  const sendReq = await fetch(
-                    `${BACKEND_URI}/api/v1/canvas/delete?canvasId=${canvasId}`,
-                    {
-                      method: "DELETE",
-                      headers: {
-                        Authorization: authCookie,
-                      },
-                    }
-                  );
-                  const res = await sendReq.json();
-                  console.log(res);
-                  
-                } catch (error) {}
+                await deleteCanvas({authCookie, canvasId})
               }}
               className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center text-red-500"
             >

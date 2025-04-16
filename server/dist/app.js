@@ -21,7 +21,7 @@ const canvas_model_1 = require("./db/models/canvas.model");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: [
@@ -41,11 +41,9 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
     ws.on("message", (ms) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const message = JSON.parse(ms.toString());
-            console.log(message.canvasId);
-            const update = yield canvas_model_1.Canvas.findByIdAndUpdate(message.canvasId, {
+            yield canvas_model_1.Canvas.findByIdAndUpdate(message.canvasId, {
                 canvasElements: message.data,
             });
-            console.log(update);
         }
         catch (error) {
             console.log(error);
@@ -77,9 +75,9 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
 app.get("/", (req, res) => {
     res.send("Hello, server is up and running.");
 });
-setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield fetch("https://cloud-canvas.onrender.com");
-}));
+// setInterval( async () => {
+//   await fetch("https://cloud-canvas.onrender.com")
+// })
 const canvas_route_1 = __importDefault(require("./routes/canvas.route"));
 app.use("/api/v1", canvas_route_1.default);
 const user_route_1 = __importDefault(require("./routes/user.route"));

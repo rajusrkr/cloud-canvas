@@ -6,6 +6,7 @@ import Header from "./components/header";
 import Dashboard from "./pages/Dashboard";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
+import RedirectToDashboardOrSignin from "./pages/RedirectToDashboardOrSignin";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,15 @@ const router = createBrowserRouter([
         <Home />
       </>
     ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <>
+        <Header />
+        <RedirectToDashboardOrSignin />
+      </>
+    )
   },
   {
     path: "/dashboard/:userId",

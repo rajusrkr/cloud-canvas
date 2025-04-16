@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
+import { useCloudCanvasUserStore } from "@/store/user_store";
 import Cookies from "js-cookie";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
@@ -19,6 +20,16 @@ export default function Dashboard() {
   const { fetchCanvas } = useCloudCanvasCanvasNamesAndIds();
 
   useEffect(() => {
+    if (
+      useCloudCanvasUserStore.getState().isUserAuthenticated &&
+      typeof cookie === "string" &&
+      typeof useCloudCanvasUserStore.getState().userName === "string"
+    ) {
+      navigate(`/dashboard/${useCloudCanvasUserStore.getState().userName}`);
+    } else {
+      navigate("/signin");
+    }
+
     (async () => {
       await fetchCanvas({ authCookie: cookie! });
     })();
@@ -37,8 +48,9 @@ export default function Dashboard() {
   ) {
     return (
       <div className="flex justify-center items-center min-h-[30vh]">
-        <h2 className="font-semibold text-2xl">You dont have any canvas yet.</h2>
-
+        <h2 className="font-semibold text-2xl">
+          You dont have any canvas yet.
+        </h2>
       </div>
     );
   }

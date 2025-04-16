@@ -1,32 +1,29 @@
-import { BACKEND_URI } from "@/utils/config"
-import { useNavigate } from "react-router"
+import { LayoutDashboard, LogIn } from "lucide-react";
+import { Link } from "react-router";
 
 const Home = () => {
-
-    const navigate = useNavigate()
-
   return (
-    <div>
-        <button
-        className="bg-blue-400"
-        onClick={async () => {
-            const sendReq = await fetch(`${BACKEND_URI}/api/v1/canvas/create`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })   
-            
-            const res = await sendReq.json()
+    <div className="flex flex-col items-center justify-center min-h-[20vh]">
+      <div className="mt-4">
+        <h2 className="text-center text-4xl font-bold">
+          Hi there!! Welcome to <span className="dark:bg-yellow-50 rounded-full dark:text-black px-4 bg-yellow-900 text-white">cloud canvas.</span>
+        </h2>
+      </div>
+      <div className="mt-10 space-y-2">
+        <div className="w-48 dark:bg-zinc-300 bg-zinc-900 text-white rounded-full dark:text-black justify-center flex h-8 items-center">
+          <Link to={"/signin"} className="font-bold flex items-center">
+            Signin <LogIn className="ml-1" size={20}/>
+          </Link>
+        </div>
 
-            if (res.success) {
-                navigate(`/canvas/${res.canvasId}`)
-            }
-            
-        }}
-        >Create</button>
+        <div className="w-48 dark:bg-zinc-300 bg-zinc-900 text-white rounded-full dark:text-black justify-center flex h-8 items-center">
+          <Link to={"/dashboard"} className="font-bold flex items-center">
+            Go to dashboard <LayoutDashboard  className="ml-1" size={20}/>
+          </Link>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
