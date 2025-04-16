@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCanvas = exports.fetchCanvasIdsAndName = exports.fetch = exports.create = void 0;
+exports.editCanvasName = exports.deleteCanvas = exports.fetchCanvasIdsAndName = exports.fetch = exports.create = void 0;
 const canvas_model_1 = require("../db/models/canvas.model");
 // create a new canvas
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -47,12 +47,39 @@ const deleteCanvas = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (typeof deleteCanvas !== "object") {
             return res.status(400).json({
                 success: false,
-                message: "Failed to delete"
+                message: "Failed to delete",
             });
         }
         return res.status(200).json({
             success: true,
-            message: "Deleted successfully"
+            message: "Deleted successfully",
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+        });
+    }
+});
+exports.deleteCanvas = deleteCanvas;
+// edit canvas name
+const editCanvasName = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { data } = req.body;
+    //@ts-ignore
+    const user = req.userId;
+    try {
+        const update = yield canvas_model_1.Canvas.findByIdAndUpdate({ _id: data.id, createdBy: user }, { canvasName: data.newName });
+        if (typeof update !== "object") {
+            return res.status(400).json({
+                success: false,
+                message: "Unable to update the name"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Name updated successfully."
         });
     }
     catch (error) {
@@ -63,7 +90,7 @@ const deleteCanvas = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
-exports.deleteCanvas = deleteCanvas;
+exports.editCanvasName = editCanvasName;
 // fetch a specific canvas by id
 const fetch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const urlParams = req.query;

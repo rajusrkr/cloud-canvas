@@ -21,7 +21,7 @@ const canvas_model_1 = require("./db/models/canvas.model");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: [
@@ -74,6 +74,12 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
     .catch((error) => {
     console.log(error);
 });
+app.get("/", (req, res) => {
+    res.send("Hello, server is up and running.");
+});
+setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield fetch("https://cloud-canvas.onrender.com");
+}));
 const canvas_route_1 = __importDefault(require("./routes/canvas.route"));
 app.use("/api/v1", canvas_route_1.default);
 const user_route_1 = __importDefault(require("./routes/user.route"));

@@ -70,6 +70,15 @@ db()
     console.log(error);
   });
 
+
+app.get("/", (req, res) => {
+  res.send("Hello, server is up and running.")
+})
+
+setInterval( async () => {
+  await fetch("https://cloud-canvas.onrender.com")
+})
+
 import canvasRouter from "./routes/canvas.route";
 app.use("/api/v1", canvasRouter);
 

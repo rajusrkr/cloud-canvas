@@ -38,22 +38,53 @@ const deleteCanvas = async (req: Request, res: any) => {
       { _id: canvasId },
       { createdBy: user }
     );
-    if (typeof  deleteCanvas !== "object") {
+    if (typeof deleteCanvas !== "object") {
       return res.status(400).json({
         success: false,
-        message: "Failed to delete"
+        message: "Failed to delete",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
+
+// edit canvas name
+const editCanvasName = async (req: Request, res: any) => {
+  const { data } = req.body;
+
+  //@ts-ignore
+  const user = req.userId;
+
+  try {
+    const update = await Canvas.findByIdAndUpdate(
+      { _id: data.id, createdBy: user },
+      { canvasName: data.newName }
+    );
+    if (typeof update !== "object") {
+      return res.status(400).json({
+        success: false,
+        message: "Unable to update the name"
       })
     }
 
     return res.status(200).json({
       success: true,
-      message: "Deleted successfully"
+      message: "Name updated successfully."
     })
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      success: false,
+      success: false, 
       message: "Internal server error."
     })
   }
@@ -113,4 +144,4 @@ const fetchCanvasIdsAndName = async (req: Request, res: any) => {
   }
 };
 
-export { create, fetch, fetchCanvasIdsAndName, deleteCanvas };
+export { create, fetch, fetchCanvasIdsAndName, deleteCanvas, editCanvasName };

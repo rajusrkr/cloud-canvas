@@ -8,86 +8,141 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
 import { BACKEND_URI } from "@/utils/config";
 import {
   EllipsisVertical,
   ExternalLink,
   FolderPen,
+  Loader,
   Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router";
-
-interface Canvas {
-  canvasElements: string[];
-  canvasName: string;
-  updatedAt: string;
-  _id: string;
-}
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { useState } from "react";
 
 export default function DashboardActionButton({
   canvasId,
+  canvasName,
   authCookie,
-  allCanvas,
 }: {
   canvasId: any;
+  canvasName: string;
   authCookie: string;
-  allCanvas: Canvas[];
 }) {
   const navigate = useNavigate();
+  const { editCanvasName } = useCloudCanvasCanvasNamesAndIds();
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [newName, setNewName] = useState("");
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          <EllipsisVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Select one</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            onClick={() => {
-              navigate(`/canvas/${canvasId}`);
-            }}
-            className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center"
-          >
-            Open <ExternalLink />
-          </DropdownMenuItem>
-          <DropdownMenuItem className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center">
-            Rename <FolderPen />
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={async () => {
-              try {
-                const sendReq = await fetch(
-                  `${BACKEND_URI}/api/v1/canvas/delete?canvasId=${canvasId}`,
-                  {
-                    method: "DELETE",
-                    headers: {
-                      Authorization: authCookie,
-                    },
-                  }
-                );
-                const res = await sendReq.json();
-                if (res.success) {
-                  allCanvas.map((canvas, index) => {
-                    if (canvas._id === canvasId) {
-                      console.log(canvasId);
-                      console.log(index);
-                      allCanvas.splice(index, 1);
-                      console.log(allCanvas);
+    <>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">
+            <EllipsisVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Select one</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              onClick={() => {
+                navigate(`/canvas/${canvasId}`);
+              }}
+              className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center"
+            >
+              Open <ExternalLink />
+            </DropdownMenuItem>
+
+            {/* edit canvas */}
+            <DropdownMenuItem
+              onSelect={() => {
+                setDropdownOpen(false);
+                setDialogOpen(true);
+              }}
+              className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center"
+            >
+              Edit <FolderPen />
+            </DropdownMenuItem>
+
+            {/* DELETE CANVAS */}
+            <DropdownMenuItem
+              onClick={async () => {
+                try {
+                  const sendReq = await fetch(
+                    `${BACKEND_URI}/api/v1/canvas/delete?canvasId=${canvasId}`,
+                    {
+                      method: "DELETE",
+                      headers: {
+                        Authorization: authCookie,
+                      },
                     }
-                  });
-                }
-              } catch (error) {}
-            }}
-            className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center text-red-500"
-          >
-            Delete <Trash2 className="text-red-500" />
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                  );
+                  const res = await sendReq.json();
+                  console.log(res);
+                  
+                } catch (error) {}
+              }}
+              className="hover:cursor-pointer hover:font-extrabold transition-all flex items-center text-red-500"
+            >
+              Delete <Trash2 className="text-red-500" />
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/*edit DIALOG */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogTitle>Edit canvas name</DialogTitle>
+          <DialogDescription>Give canvas a new name</DialogDescription>
+          <div className="space-y-2">
+            <Label>Current name</Label>
+            <Input defaultValue={canvasName} id="currentName" disabled={true} />
+          </div>
+          <div className="space-y-2">
+            <Label>New name</Label>
+            <Input
+              placeholder="Enter new name"
+              id="newName"
+              onChange={(e) => setNewName(e.target.value)}
+            />
+          </div>
+          <div>
+            {useCloudCanvasCanvasNamesAndIds.getState().isEditingName ? (
+              <Button className="w-full hover:cursor-pointer" disabled={true}>
+                <Loader className="animate-spin" />
+              </Button>
+            ) : (
+              <Button
+                className="w-full hover:cursor-pointer"
+                onClick={async () => {
+                  await editCanvasName({ id: canvasId, newName, authCookie });
+                  if (
+                    useCloudCanvasCanvasNamesAndIds.getState()
+                      .isNameEditingSuccess
+                  ) {
+                    setDialogOpen(false);
+                  }
+                }}
+              >
+                Save Chnages
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

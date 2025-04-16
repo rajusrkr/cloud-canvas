@@ -8,4 +8,5 @@ router.post("/canvas/create", userSession_1.userSession, canvas_controller_1.cre
 router.put("/canvas/fetch", canvas_controller_1.fetch);
 router.get("/canvas/get-all-canvas", userSession_1.userSession, canvas_controller_1.fetchCanvasIdsAndName);
 router.delete("/canvas/delete", userSession_1.userSession, canvas_controller_1.deleteCanvas);
+router.put("/canvas/edit-name", userSession_1.userSession, canvas_controller_1.editCanvasName);
 exports.default = router;

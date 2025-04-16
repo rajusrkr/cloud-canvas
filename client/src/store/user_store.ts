@@ -15,7 +15,7 @@ interface CanvasIdsAndName {
     signin: ({email, password}: {email: string, password: string}) => Promise<void>
 }
 
-const useCloudCanvasUserStore = create(persist<CanvasIdsAndName>((set, get) => ({
+const useCloudCanvasUserStore = create(persist<CanvasIdsAndName>((set) => ({
     isLoading: false,
     isError: false,
     errorMessage: null,
