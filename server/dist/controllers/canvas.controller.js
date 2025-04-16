@@ -95,7 +95,7 @@ exports.editCanvasName = editCanvasName;
 const fetch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const urlParams = req.query;
     try {
-        const getCanvasData = yield canvas_model_1.Canvas.findById(urlParams.canvasId);
+        const getCanvasData = yield canvas_model_1.Canvas.findById(urlParams.canvasId).select("-canvasCreatedBy -createdAt");
         if (!getCanvasData) {
             return res.status({
                 success: false,
@@ -104,7 +104,7 @@ const fetch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         return res.status(200).json({
             success: true,
-            message: "Fetch",
+            message: "Fetched",
             canvasElements: getCanvasData,
         });
     }

@@ -57,7 +57,6 @@ const deleteCanvas = async (req: Request, res: any) => {
     });
   }
 };
-
 // edit canvas name
 const editCanvasName = async (req: Request, res: any) => {
   const { data } = req.body;
@@ -93,7 +92,7 @@ const editCanvasName = async (req: Request, res: any) => {
 const fetch = async (req: Request, res: any) => {
   const urlParams = req.query;
   try {
-    const getCanvasData = await Canvas.findById(urlParams.canvasId);
+    const getCanvasData = await Canvas.findById(urlParams.canvasId).select("-canvasCreatedBy -createdAt")
     if (!getCanvasData) {
       return res.status({
         success: false,
@@ -102,7 +101,7 @@ const fetch = async (req: Request, res: any) => {
     }
     return res.status(200).json({
       success: true,
-      message: "Fetch",
+      message: "Fetched",
       canvasElements: getCanvasData,
     });
   } catch (error) {

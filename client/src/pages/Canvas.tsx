@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>();
+  const [currentCanvasName, setCurrentCanvasName] = useState("")
   const [loading, setLoading] = useState(false);
   const [docked, setDocked] = useState(false);
   const params = useParams();
@@ -43,6 +44,7 @@ const Canvas = () => {
 
       if (res.success) {
         setCanvasElements(res.canvasElements.canvasElements);
+        setCurrentCanvasName(res.canvasName)
         setLoading(false);
       }
     })();
@@ -123,10 +125,7 @@ const Canvas = () => {
         <Footer>
           <div className="bg-gray-200 rounded flex justify-center items-center px-4 ml-2">
             <p className="text-black">
-              Canvas:{" "}
-              <span className="font-bold">
-                {useCloudCanvasCanvasNamesAndIds.getState().isCanvasDeleted}
-              </span>
+              <span className="font-bold">You are on:</span> {currentCanvasName}
             </p>
           </div>
           <Sidebar.Trigger
