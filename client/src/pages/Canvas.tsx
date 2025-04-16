@@ -44,7 +44,7 @@ const Canvas = () => {
 
       if (res.success) {
         setCanvasElements(res.canvasElements.canvasElements);
-        setCurrentCanvasName(res.canvasName)
+        setCurrentCanvasName(res.canvasElements.canvasName)
         setLoading(false);
       }
     })();
