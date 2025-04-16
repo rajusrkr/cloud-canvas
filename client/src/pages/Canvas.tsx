@@ -16,16 +16,14 @@ const Canvas = () => {
   const params = useParams();
 
   const cookie = Cookies.get("canvas_cloud_auth");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (
-      useCloudCanvasUserStore.getState().isUserAuthenticated &&
-      typeof cookie === "string" &&
-      typeof useCloudCanvasUserStore.getState().userName === "string"
+      !useCloudCanvasUserStore.getState().isUserAuthenticated &&
+      typeof cookie !== "string" &&
+      typeof useCloudCanvasUserStore.getState().userName !== "string"
     ) {
-      navigate(`/dashboard/${useCloudCanvasUserStore.getState().userName}`);
-    } else {
       navigate("/signin");
     }
 

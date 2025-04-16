@@ -21,12 +21,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (
-      useCloudCanvasUserStore.getState().isUserAuthenticated &&
-      typeof cookie === "string" &&
-      typeof useCloudCanvasUserStore.getState().userName === "string"
+      !useCloudCanvasUserStore.getState().isUserAuthenticated &&
+      typeof cookie !== "string" &&
+      typeof useCloudCanvasUserStore.getState().userName !== "string"
     ) {
-      navigate(`/dashboard/${useCloudCanvasUserStore.getState().userName}`);
-    } else {
       navigate("/signin");
     }
 
