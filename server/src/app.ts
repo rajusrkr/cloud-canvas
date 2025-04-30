@@ -73,9 +73,9 @@ app.get("/", (req, res) => {
   res.send("Hello, server is up and running.")
 })
 
-//setInterval( async () => {
-//await fetch("https://cloud-canvas.onrender.com")
-//})
+setInterval( async () => {
+await fetch("https://cloud-canvas.onrender.com")
+},20 * 60 * 1000)
 
 import canvasRouter from "./routes/canvas.route";
 app.use("/api/v1", canvasRouter);
