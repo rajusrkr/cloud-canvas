@@ -24,10 +24,7 @@ dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: [
-        "https://cloud-canvas.vercel.app",
-        "http://localhost:5173"
-    ],
+    origin: ["https://cloud-canvas.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }));
@@ -73,11 +70,12 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
     console.log(error);
 });
 app.get("/", (req, res) => {
-    res.send("Hello, server is up and running.");
+    res.send({ message: `Srever is up and running on port ${PORT}` });
 });
 setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield fetch("https://cloud-canvas.onrender.com");
-}));
+    const sendReq = yield fetch("https://cloud-canvas.onrender.com");
+    console.log(`Server status: ${sendReq.status};`);
+}), 12 * 60 * 1000);
 const canvas_route_1 = __importDefault(require("./routes/canvas.route"));
 app.use("/api/v1", canvas_route_1.default);
 const user_route_1 = __importDefault(require("./routes/user.route"));
