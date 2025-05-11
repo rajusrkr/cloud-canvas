@@ -3,7 +3,8 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
 import Cookies from "js-cookie";
 import { BACKEND_URI } from "@/utils/config";
-import { FilePlus, SquareChevronRight } from "lucide-react";
+import { FilePlus, Loader, SquareChevronRight } from "lucide-react";
+import {useState} from "react"
 
 import {
   Sheet,
@@ -14,8 +15,9 @@ import {
 export default function Header() {
   const currentPath = useLocation();
   const params = useParams();
-
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false)
 
   const cookie = Cookies.get("canvas_cloud_auth");
 
@@ -29,9 +31,10 @@ export default function Header() {
           </div>
           <div className="space-x-4">
             <Button
-              className="rounded-full items-center font-bold"
+              className="rounded-full items-center font-bold hover:cursor-pointer"
               onClick={async () => {
                 try {
+                  setLoading(true)
                   const sendReq = await fetch(
                     `${BACKEND_URI}/api/v1/canvas/create`,
                     {
@@ -44,6 +47,7 @@ export default function Header() {
                   );
                   const res = await sendReq.json();
                   if (res.success) {
+                    setLoading(false)
                     navigate(`/canvas/${res.canvasId}`);
                   }
                 } catch (error) {
@@ -51,7 +55,9 @@ export default function Header() {
                 }
               }}
             >
-              New Canvas <FilePlus />
+              {
+                loading ? (<div className="animate-spin"><Loader /></div>) : (<>New Canvas <FilePlus /></>)
+              }
             </Button>
 
             <Sheet>

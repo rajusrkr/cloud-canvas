@@ -4,7 +4,7 @@ import "@excalidraw/excalidraw/index.css";
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { isEqual } from "lodash";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { BACKEND_URI } from "@/utils/config";
 import { Loader, PanelRight } from "lucide-react";
 import { useCloudCanvasUserStore } from "@/store/user_store";
@@ -125,7 +125,7 @@ const Canvas = () => {
         <Footer>
           <div className="bg-gray-200 rounded flex justify-center items-center px-4 ml-2">
             <p className="text-black">
-              <span className="font-bold">You are on:</span> {currentCanvasName}
+              <span className="font-bold">You are on:</span> {currentCanvasName} / <span><Link to={"/dashboard"} className="hover:underline hover:text-blue-600">Home</Link></span>
             </p>
           </div>
           <Sidebar.Trigger
