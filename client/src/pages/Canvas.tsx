@@ -125,7 +125,7 @@ const Canvas = () => {
         <Footer>
           <div className="bg-gray-200 rounded flex justify-center items-center px-4 ml-2">
             <p className="text-black">
-              <span className="font-bold">You are on:</span> {currentCanvasName} / <span><Link to={"/dashboard"} className="hover:underline hover:text-blue-600 font-semibold">Home</Link></span>
+              <span className="font-bold">You are on:</span> {currentCanvasName} / <span><Link to={"/dashboard"} className="hover:underline text-blue-600 font-bold">Dashboard</Link></span>
             </p>
           </div>
           <Sidebar.Trigger

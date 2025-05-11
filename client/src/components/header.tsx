@@ -31,7 +31,7 @@ export default function Header() {
           </div>
           <div className="space-x-4">
             <Button
-              className="rounded-full items-center font-bold hover:cursor-pointer w-48"
+              className="rounded-full items-center font-bold hover:cursor-pointer w-40"
               onClick={async () => {
                 try {
                   setLoading(true)
