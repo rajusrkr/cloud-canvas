@@ -53,6 +53,10 @@ export default function Dashboard() {
     );
   }
 
+  const dateFormatter = new Intl.DateTimeFormat("en-us", {
+    dateStyle: "full"
+  })
+
   return (
     <Table className="max-w-7xl mx-auto">
       <TableHeader>
@@ -80,7 +84,7 @@ export default function Dashboard() {
               >
                 {canvas.canvasName}
               </TableCell>
-              <TableCell>{canvas.updatedAt}</TableCell>
+              <TableCell>{dateFormatter.format(new Date(canvas.updatedAt))}</TableCell>
               <TableCell className="text-right">
                 <DashboardActionButton
                   canvasId={canvas._id}

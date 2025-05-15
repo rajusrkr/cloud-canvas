@@ -122,7 +122,7 @@ const fetchCanvasIdsAndName = (req, res) => __awaiter(void 0, void 0, void 0, fu
     //@ts-ignore
     const user = req.userId;
     try {
-        const getCanvases = yield canvas_model_1.Canvas.find({ canvasCreatedBy: user }).select("-createdAt -canvasCreatedBy");
+        const getCanvases = yield canvas_model_1.Canvas.find({ canvasCreatedBy: user }).select("-createdAt -canvasCreatedBy -canvasElements");
         if (getCanvases.length === 0) {
             return res.status(400).json({
                 success: false,

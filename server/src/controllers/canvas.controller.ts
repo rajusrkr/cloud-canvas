@@ -119,7 +119,7 @@ const fetchCanvasIdsAndName = async (req: Request, res: any) => {
 
   try {
     const getCanvases = await Canvas.find({ canvasCreatedBy: user }).select(
-      "-createdAt -canvasCreatedBy"
+      "-createdAt -canvasCreatedBy -canvasElements"
     );
 
     if (getCanvases.length === 0) {
