@@ -17,7 +17,7 @@ import { useNavigate } from "react-router";
 export default function Dashboard() {
   const cookie = Cookies.get("canvas_cloud_auth");
   const navigate = useNavigate();
-  const { fetchCanvas } = useCloudCanvasCanvasNamesAndIds();
+  const { fetchCanvas, isLoading, canvasIdsAndNames } = useCloudCanvasCanvasNamesAndIds();
 
   useEffect(() => {
     if (
@@ -33,7 +33,7 @@ export default function Dashboard() {
     })();
   }, []);
 
-  if (useCloudCanvasCanvasNamesAndIds.getState().isLoading) {
+  if (isLoading && canvasIdsAndNames.length===0) {
     return (
       <div className="flex justify-center items-center min-h-[30vh]">
         <Loader className="animate-spin" />
