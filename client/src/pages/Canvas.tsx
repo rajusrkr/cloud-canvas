@@ -94,7 +94,9 @@ const Canvas = () => {
       <Excalidraw
         initialData={{
           elements: canvasElements,
-          appState: { theme: "dark" },
+          appState: {currentItemFontFamily: 3, theme: "dark" },
+          
+          
         }}
         onChange={handleChange}
       >
