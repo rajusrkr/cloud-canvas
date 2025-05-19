@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>();
-  const [currentCanvasName, setCurrentCanvasName] = useState("")
+  const [currentCanvasName, setCurrentCanvasName] = useState("");
   const [loading, setLoading] = useState(false);
   const [docked, setDocked] = useState(false);
   const params = useParams();
@@ -44,7 +44,7 @@ const Canvas = () => {
 
       if (res.success) {
         setCanvasElements(res.canvasElements.canvasElements);
-        setCurrentCanvasName(res.canvasElements.canvasName)
+        setCurrentCanvasName(res.canvasElements.canvasName);
         setLoading(false);
       }
     })();
@@ -62,7 +62,6 @@ const Canvas = () => {
     },
   });
 
-  // for local
 
   // handle canvas change
   const handleChange = async (drawings: string[] | any) => {
@@ -94,9 +93,7 @@ const Canvas = () => {
       <Excalidraw
         initialData={{
           elements: canvasElements,
-          appState: {currentItemFontFamily: 3, theme: "dark" },
-          
-          
+          appState: { currentItemFontFamily: 3, theme: "dark" },
         }}
         onChange={handleChange}
       >
@@ -109,11 +106,7 @@ const Canvas = () => {
                 .canvasIdsAndNames?.map((canvas) => (
                   <Sidebar.Tab tab="canvases" key={canvas._id}>
                     <Button
-                      onClick={() =>
-                        navigate(
-                          `/canvas/${canvas._id}`
-                        )
-                      }
+                      onClick={() => navigate(`/canvas/${canvas._id}`)}
                       variant={"ghost"}
                     >
                       {canvas.canvasName}
@@ -127,7 +120,14 @@ const Canvas = () => {
         <Footer>
           <div className="bg-gray-200 rounded flex justify-center items-center px-4 ml-2">
             <p className="text-black">
-              <span className="font-bold">You are on:</span> {currentCanvasName} / <span><Link to={"/dashboard"}> <span className="hover:underline text-blue-600 font-bold">Dashboard</span></Link></span>
+              <span>
+                <Link to={"/dashboard"}>
+                  <span className="hover:underline text-blue-600 font-bold">
+                    Dashboard
+                  </span>
+                </Link>
+              </span>
+               / {currentCanvasName} <span></span>
             </p>
           </div>
           <Sidebar.Trigger
