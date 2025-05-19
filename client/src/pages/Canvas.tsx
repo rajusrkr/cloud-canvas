@@ -45,6 +45,7 @@ const Canvas = () => {
       if (res.success) {
         setCanvasElements(res.canvasElements.canvasElements);
         setCurrentCanvasName(res.canvasElements.canvasName);
+        document.title = `Cloud Canvas - ${res.canvasElements.canvasName}`;
         setLoading(false);
       }
     })();

@@ -31,6 +31,8 @@ export default function Dashboard() {
     (async () => {
       await fetchCanvas({ authCookie: cookie! });
     })();
+
+    document.title = "Cloud Canvas - Dashboard"
   }, []);
 
   if (isLoading && canvasIdsAndNames.length===0) {
