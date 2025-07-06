@@ -8,11 +8,6 @@ import cookiesParser from "cookie-parser";
 import cors from "cors";
 dotenv.config();
 
-interface CustomSocket extends WebSocket {
-  isAlive: boolean
-}
-
-
 const PORT = process.env.PORT;
 const app = express();
 app.use(
@@ -31,35 +26,9 @@ const server = http.createServer(app);
 // websocket server
 const webSocket = new WebSocketServer({ server });
 
-webSocket.on("connection", async (socket: WebSocket) => {
+webSocket.on("connection", async (ws) => {
   console.log("new connection...");
 
-  const ws = socket as CustomSocket;
-
-  ws.on("pong", () => {
-    console.log("pong received");
-    
-    ws.isAlive = true
-  })
-
-
-  const interval = setInterval(() => {
-    webSocket.clients.forEach((socket) => {
-      const ws = socket as CustomSocket;
-      if (!ws.isAlive) {
-        console.log("Terminating dead connection");
-        return ws.terminate()
-      }
-
-      // mark the ping dead
-      ws.isAlive =  false;
-
-      socket.ping()
-    })
-  }, 30000)
-
-
-  
   // on message
   ws.on("message", async (ms) => {
     try {
@@ -74,7 +43,6 @@ webSocket.on("connection", async (socket: WebSocket) => {
   // on disconnection
   ws.on("close", () => {
     console.log("disconnected");
-    clearInterval(interval)
   });
   // on error
   ws.on("error", (error) => {

@@ -35,7 +35,10 @@ export default function Signup() {
       if (response.success) {
         navigate("/signin");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      
+    }
   };
   return (
     <form
