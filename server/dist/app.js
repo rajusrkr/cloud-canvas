@@ -30,10 +30,29 @@ app.use((0, cors_1.default)({
 }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
+// http server
 const server = http_1.default.createServer(app);
-const webSocket = new ws_1.WebSocket.Server({ server });
-webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* () {
+// websocket server
+const webSocket = new ws_1.WebSocketServer({ server });
+webSocket.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("new connection...");
+    const ws = socket;
+    ws.on("pong", () => {
+        console.log("pong received");
+        ws.isAlive = true;
+    });
+    const interval = setInterval(() => {
+        webSocket.clients.forEach((socket) => {
+            const ws = socket;
+            if (!ws.isAlive) {
+                console.log("Terminating dead connection");
+                return ws.terminate();
+            }
+            // mark the ping dead
+            ws.isAlive = false;
+            socket.ping();
+        });
+    }, 30000);
     // on message
     ws.on("message", (ms) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -49,6 +68,7 @@ webSocket.on("connection", (ws) => __awaiter(void 0, void 0, void 0, function* (
     // on disconnection
     ws.on("close", () => {
         console.log("disconnected");
+        clearInterval(interval);
     });
     // on error
     ws.on("error", (error) => {

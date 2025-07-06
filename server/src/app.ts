@@ -1,12 +1,17 @@
 import dotenv from "dotenv";
 import express from "express";
 import http from "http";
-import { WebSocket } from "ws";
+import { WebSocket, WebSocketServer } from "ws";
 import { db } from "./db";
 import { Canvas } from "./db/models/canvas.model";
 import cookiesParser from "cookie-parser";
 import cors from "cors";
 dotenv.config();
+
+interface CustomSocket extends WebSocket {
+  isAlive: boolean
+}
+
 
 const PORT = process.env.PORT;
 const app = express();
@@ -21,11 +26,40 @@ app.use(
 app.use(cookiesParser());
 app.use(express.json());
 
+// http server
 const server = http.createServer(app);
-const webSocket = new WebSocket.Server({ server });
+// websocket server
+const webSocket = new WebSocketServer({ server });
 
-webSocket.on("connection", async (ws) => {
+webSocket.on("connection", async (socket: WebSocket) => {
   console.log("new connection...");
+
+  const ws = socket as CustomSocket;
+
+  ws.on("pong", () => {
+    console.log("pong received");
+    
+    ws.isAlive = true
+  })
+
+
+  const interval = setInterval(() => {
+    webSocket.clients.forEach((socket) => {
+      const ws = socket as CustomSocket;
+      if (!ws.isAlive) {
+        console.log("Terminating dead connection");
+        return ws.terminate()
+      }
+
+      // mark the ping dead
+      ws.isAlive =  false;
+
+      socket.ping()
+    })
+  }, 30000)
+
+
+  
   // on message
   ws.on("message", async (ms) => {
     try {
@@ -40,6 +74,7 @@ webSocket.on("connection", async (ws) => {
   // on disconnection
   ws.on("close", () => {
     console.log("disconnected");
+    clearInterval(interval)
   });
   // on error
   ws.on("error", (error) => {
@@ -77,4 +112,5 @@ import canvasRouter from "./routes/canvas.route";
 app.use("/api/v1", canvasRouter);
 
 import userRouter from "./routes/user.route";
+import { log } from "console";
 app.use("/api/v1", userRouter);
