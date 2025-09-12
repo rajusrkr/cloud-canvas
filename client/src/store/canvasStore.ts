@@ -20,7 +20,7 @@ interface CanvasNamesAndIds {
   errorMessage: null | string;
   canvasIdsAndNames: CanvasNameAndId[];
   // fetch all canvases
-  fetchCanvas: ({ authCookie }: { authCookie: string }) => Promise<void>;
+  fetchCanvas: () => Promise<void>;
   // edit canvas name
   editCanvasName: ({
     id,
@@ -41,7 +41,7 @@ interface CanvasNamesAndIds {
   }) => Promise<void>;
 }
 
-const useCloudCanvasCanvasNamesAndIds = create(
+const useCanvasNamesAndIds = create(
   persist<CanvasNamesAndIds>(
     (set) => ({
       isLoading: false,
@@ -52,7 +52,7 @@ const useCloudCanvasCanvasNamesAndIds = create(
       isCanvasDeleted: false,
       isCanvasDeleting: false,
       canvasIdsAndNames: [],
-      fetchCanvas: async ({ authCookie }) => {
+      fetchCanvas: async () => {
         set({ isLoading: true, isError: false, errorMessage: null });
 
         try {
@@ -62,8 +62,8 @@ const useCloudCanvasCanvasNamesAndIds = create(
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `${authCookie}`,
               },
+              credentials: "include"
             }
           );
           const res = await sendReq.json();
@@ -114,10 +114,10 @@ const useCloudCanvasCanvasNamesAndIds = create(
           );
           const res = await sendReq.json();
           if (res.success) {
-            const index = useCloudCanvasCanvasNamesAndIds
+            const index = useCanvasNamesAndIds
               .getState()
               .canvasIdsAndNames.findIndex((canvas) => canvas._id === id);
-            useCloudCanvasCanvasNamesAndIds.setState((prev) => {
+            useCanvasNamesAndIds.setState((prev) => {
               const update = [...prev.canvasIdsAndNames];
               update[index] = {
                 ...update[index],
@@ -163,19 +163,19 @@ const useCloudCanvasCanvasNamesAndIds = create(
           );
           const res = await sendReq.json();
           if (res.success) {
-            const filter = useCloudCanvasCanvasNamesAndIds
+            const filter = useCanvasNamesAndIds
               .getState()
               .canvasIdsAndNames.filter((canvas) => canvas._id !== canvasId);
 
-            useCloudCanvasCanvasNamesAndIds.setState(() => {
+            useCanvasNamesAndIds.setState(() => {
               return { canvasIdsAndNames: filter };
             });
           }
-        } catch (error) {}
+        } catch (error) { }
       },
     }),
-    { name: "cloud_canvas_canvas_names_ids" }
+    { name: "canvasNamesAndIds" }
   )
 );
 
-export { useCloudCanvasCanvasNamesAndIds };
+export { useCanvasNamesAndIds };
