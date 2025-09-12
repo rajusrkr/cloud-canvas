@@ -1,14 +1,16 @@
 import dotenv from "dotenv";
 import express from "express";
 import http from "http";
-import { WebSocket, WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 import { db } from "./db";
-import { Canvas } from "./db/models/canvas.model";
+import { ws } from "./handle-ws";
 import cookiesParser from "cookie-parser";
 import cors from "cors";
+
+
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(
   cors({
@@ -22,50 +24,21 @@ app.use(cookiesParser());
 app.use(express.json());
 
 // http server
-const server = http.createServer(app);
+export const server = http.createServer(app);
 // websocket server
-const webSocket = new WebSocketServer({ server });
-
-webSocket.on("connection", async (ws) => {
-  console.log("new connection...");
-
-  // on message
-  ws.on("message", async (ms) => {
-    try {
-      const message = JSON.parse(ms.toString());
-      await Canvas.findByIdAndUpdate(message.canvasId, {
-        canvasElements: message.data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  });
-  // on disconnection
-  ws.on("close", () => {
-    console.log("disconnected");
-  });
-  // on error
-  ws.on("error", (error) => {
-    console.log(error);
-  });
-  // send
-  ws.send(
-    JSON.stringify({
-      type: "Connection_ack",
-      message: "ws connection success",
-    })
-  );
-});
+export const wss = new WebSocketServer({ server });
 
 db()
   .then(() => {
     server.listen(PORT, () => {
       console.log(`Server is listening on port: ${PORT}`);
     });
+    ws()
   })
   .catch((error) => {
     console.log(error);
   });
+
 
 app.get("/", (req, res) => {
   res.send({ message: `Srever is up and running on port ${PORT}` });
@@ -80,5 +53,4 @@ import canvasRouter from "./routes/canvas.route";
 app.use("/api/v1", canvasRouter);
 
 import userRouter from "./routes/user.route";
-import { log } from "console";
 app.use("/api/v1", userRouter);
