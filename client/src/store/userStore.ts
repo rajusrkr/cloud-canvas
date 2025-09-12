@@ -13,6 +13,8 @@ interface CanvasIdsAndName {
     userName: null | string,
     // signin func
     signin: ({ email, password }: { email: string, password: string }) => Promise<void>
+    // Verify user
+    verify: () => Promise<void>
 }
 
 const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
@@ -51,6 +53,30 @@ const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
         } catch (error) {
             console.log(error);
             set({ isLoading: false, isError: true, errorMessage: "Something is broken, please try agin later." })
+        }
+    },
+
+    verify: async () => {
+        try {
+            const sendReq = await fetch(`${BACKEND_URI}/api/v1/user/verify`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ userName: useUserStore.getState().userName })
+            })
+
+            const res = await sendReq.json();
+
+            if (!res.success) {
+                set({ isUserAuthenticated: false })
+            } else {
+                set({ isUserAuthenticated: true })
+            }
+
+        } catch (error) {
+            console.log(error);
         }
     }
 }), { name: "canvasUser" }))

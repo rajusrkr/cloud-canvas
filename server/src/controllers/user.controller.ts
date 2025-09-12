@@ -38,5 +38,28 @@ const signin = async (req: Request, res: any) => {
     return res.status(500).json({ message: "Something went worng.." });
   }
 };
+// verify user
+const verify = async (req: Request, res: any) => {
+  const data = req.body;
+  console.log(data);
+  const userName = data.userName
 
-export { signin }
+
+  // @ts-ignore
+  const userId = req.userId
+
+  try {
+    const findUser = await User.findOne({ _id: userId, username: userName })
+
+    if (typeof findUser === "object") {
+      return res.status(200).json({ message: "Verified", success: true })
+    } else {
+      return res.status(401).json({ message: "Authentication failed", success: false })
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({ message: "Internal server error", success: false })
+  }
+}
+
+export { signin, verify }
