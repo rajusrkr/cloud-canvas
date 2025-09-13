@@ -2,9 +2,7 @@ import { NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
 export function userSession(req: Request, res: any, next: NextFunction) {
-  const cookie = req.cookies.ccSession;
-  console.log(cookie);
-
+  const cookie = req.cookies.ccSession || req.headers["authorization"];
 
   if (!cookie || typeof cookie === "undefined") {
     res.status(401).json({ message: "No auth cookie available" })

@@ -51,8 +51,6 @@ function ws() {
         // handle message
         ws.on("message", async (msg) => {
             const data = JSON.parse(msg.toString());
-            // console.log(data.data);
-
             try {
                 console.log("going for update");
                 await Canvas.findByIdAndUpdate(data.canvasId, { canvasElements: data.data })
@@ -68,7 +66,6 @@ function ws() {
         ws.on("close", () => {
             console.log(`Connection closed for ${connections.get(ws)}`);
             connections.delete(ws)
-            console.log(connections.size);
         })
     })
 }
