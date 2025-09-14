@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(
   cors({
-    origin: ["https://cloud-canvas.vercel.app", "http://localhost:5173"],
+    origin: ["https://cloud-canvas.vercel.app","https://cloud-canvas-ybpm.onrender.com", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -45,8 +45,10 @@ app.get("/", (req, res) => {
 });
 
 setInterval(async () => {
-  const sendReq = await fetch("https://cloud-canvas.onrender.com");
-  console.log(`Server status: ${sendReq.status};`);
+  const sendReqBe = await fetch("https://api-cloud-canvas.onrender.com");
+  const sendReqFe = await fetch("https://cloud-canvas-ybpm.onrender.com");
+  console.log(`Server status: ${sendReqBe.status};`);
+  console.log(`Server status: ${sendReqFe.status};`);
 }, 12 * 60 * 1000);
 
 import canvasRouter from "./routes/canvas.route";
