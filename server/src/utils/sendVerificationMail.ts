@@ -43,7 +43,7 @@ export async function sendVerificationMail({ email, otp }: { email: string, otp:
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td align="center" style="padding-bottom: 25px;">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3594/3594484.png" alt="Security Shield" width="80" style="display: block;">
+                            <img src="https://cdn-icons-png.flaticon.com/128/11682/11682572.png" alt="Security Shield" width="80" style="display: block;">
                         </td>
                     </tr>
                     <tr>

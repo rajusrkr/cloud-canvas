@@ -115,7 +115,7 @@ const fetch = async (req: Request, res: any) => {
 // fetch all canvas for a perticular user
 const fetchCanvasIdsAndName = async (req: Request, res: any) => {
   //@ts-ignore
-  const user = req.userId;
+  const user = req.user;
 
   try {
     const getCanvases = await Canvas.find({ canvasCreatedBy: user }).select(

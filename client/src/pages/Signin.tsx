@@ -1,8 +1,8 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCloudCanvasUserStore } from "@/store/user_store";
+import { useUserStore } from "@/store/userStore";
 
 interface FormFields {
   email: string;
@@ -10,7 +10,7 @@ interface FormFields {
 }
 
 export default function Signin() {
-  const { signin } = useCloudCanvasUserStore();
+  const { signin } = useUserStore();
   const {
     register,
     handleSubmit,
@@ -20,10 +20,10 @@ export default function Signin() {
   const navigate = useNavigate();
 
   const onsubmit: SubmitHandler<FormFields> = async (data) => {
-    await signin({ email: data.email, password: data.password });
+    await signin({ email: data.email, password: data.password, navigate });
     // if user is authenticated
-    if (useCloudCanvasUserStore.getState().isUserAuthenticated) {
-      navigate(`/dashboard/${useCloudCanvasUserStore.getState().userName}`);
+    if (useUserStore.getState().isUserAuthenticated) {
+      navigate(`/dashboard/${useUserStore.getState().userName}`);
     }
   };
   return (
@@ -62,15 +62,6 @@ export default function Signin() {
       </div>
       <div className="w-full">
         <Button className="w-full">Submit</Button>
-      </div>
-
-      <div>
-        <Link
-          to={"/signup"}
-          className="text-blue-600 underline underline-offset-2"
-        >
-          Create account
-        </Link>
       </div>
     </form>
   );

@@ -1,16 +1,14 @@
 import { Excalidraw, Footer, Sidebar } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
 
-import { useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import { useEffect, useRef, useState } from "react";
 import { isEqual } from "lodash";
 import { Link, useNavigate, useParams } from "react-router";
 import { BACKEND_URI } from "@/utils/config";
 import { Loader, PanelRight } from "lucide-react";
-import { useCloudCanvasUserStore } from "@/store/user_store";
-import Cookies from "js-cookie";
-import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
 import { Button } from "@/components/ui/button";
+import { useCanvasNamesAndIds } from "@/store/canvasStore";
+import { useUserStore } from "@/store/userStore";
 
 const Canvas = () => {
   const [canvasElements, setCanvasElements] = useState<string[] | any>();
@@ -19,19 +17,19 @@ const Canvas = () => {
   const [docked, setDocked] = useState(false);
   const params = useParams();
 
-  const cookie = Cookies.get("canvas_cloud_auth");
+  const [isConnected, setIsConnected] = useState(false);
+  const socketRef = useRef<WebSocket | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (
-      !useCloudCanvasUserStore.getState().isUserAuthenticated &&
-      typeof cookie !== "string" &&
-      typeof useCloudCanvasUserStore.getState().userName !== "string"
-    ) {
-      navigate("/signin");
-    }
+  const {verify, isUserAuthenticated} = useUserStore()
+  
 
+
+  useEffect(() => {
     (async () => {
+
+     
+
       setLoading(true);
       const sendReq = await fetch(
         `${BACKEND_URI}/api/v1/canvas/fetch?canvasId=${params.id}`,
@@ -48,23 +46,37 @@ const Canvas = () => {
         document.title = `Cloud Canvas - ${res.canvasElements.canvasName}`;
         setLoading(false);
       }
+
+       await verify()
     })();
+
+    const wss = new WebSocket("ws://localhost:8080");
+    if (socketRef.current !== null) return;
+
+    wss.onopen = () => {
+      socketRef.current = wss;
+      setIsConnected(true);
+      console.log("WS connection established.");
+    };
+
+    wss.onclose = () => {
+      setIsConnected(false);
+      // console.log("Connection closed, trying to reconnect...");
+    };
+
+    wss.onerror = (err) => {
+      console.log(err);
+      wss.close();
+      setIsConnected(false);
+    };
+
+    return () => {
+      socketRef.current?.close();
+      socketRef.current = null;
+    }
+
   }, [params.id]);
 
-  // ws connection for render
-  const { sendJsonMessage } = useWebSocket(`wss://cloud-canvas.onrender.com`, {
-    onMessage: (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
-
-
-  // handle canvas change
   const handleChange = async (drawings: string[] | any) => {
     const drawingCopy = drawings.map((drawing: string[] | any) => ({
       ...drawing,
@@ -72,12 +84,17 @@ const Canvas = () => {
 
     if (!isEqual(canvasElements, drawingCopy)) {
       setCanvasElements(drawingCopy);
-
-      sendJsonMessage({
-        type: "New drawings",
-        data: drawingCopy,
-        canvasId: params.id,
-      });
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
+        socketRef.current.send(
+          JSON.stringify({
+            type: "New drawings",
+            data: drawingCopy,
+            canvasId: params.id,
+          })
+        );
+      } else {
+        setIsConnected(false);
+      }
     }
   };
 
@@ -87,6 +104,11 @@ const Canvas = () => {
         <Loader className="animate-spin" />
       </div>
     );
+  }
+
+  if (!isUserAuthenticated) {
+    navigate("/signin")
+    return
   }
 
   return (
@@ -102,7 +124,7 @@ const Canvas = () => {
           <Sidebar.Header />
           <Sidebar.Tabs>
             <div className="px-4">
-              {useCloudCanvasCanvasNamesAndIds
+              {useCanvasNamesAndIds
                 .getState()
                 .canvasIdsAndNames?.map((canvas) => (
                   <Sidebar.Tab tab="canvases" key={canvas._id}>
@@ -128,7 +150,7 @@ const Canvas = () => {
                   </span>
                 </Link>
               </span>
-               / {currentCanvasName} <span></span>
+              / {currentCanvasName} <span> - {isConnected ? "🟢" : "⚫"}</span>
             </p>
           </div>
           <Sidebar.Trigger

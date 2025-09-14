@@ -6,6 +6,7 @@ import Header from "./components/header";
 import Dashboard from "./pages/Dashboard";
 import Signin from "./pages/Signin";
 import RedirectToDashboardOrSignin from "./pages/RedirectToDashboardOrSignin";
+import VerifyOtp from "./pages/VerifyOtp";
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
         <Header />
         <RedirectToDashboardOrSignin />
       </>
-    )
+    ),
   },
   {
     path: "/dashboard/:userId",
@@ -40,6 +41,14 @@ const router = createBrowserRouter([
     element: (
       <>
         <Signin />
+      </>
+    ),
+  },
+  {
+    path: "/signin/otp-verify",
+    element: (
+      <>
+        <VerifyOtp />
       </>
     ),
   },

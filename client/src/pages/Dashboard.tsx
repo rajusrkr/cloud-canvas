@@ -7,8 +7,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
-import { useCloudCanvasUserStore } from "@/store/user_store";
+import { useCanvasNamesAndIds } from "@/store/canvasStore";
+import { useUserStore } from "@/store/userStore";
 import Cookies from "js-cookie";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
@@ -17,19 +17,15 @@ import { useNavigate } from "react-router";
 export default function Dashboard() {
   const cookie = Cookies.get("canvas_cloud_auth");
   const navigate = useNavigate();
-  const { fetchCanvas, isLoading, canvasIdsAndNames } = useCloudCanvasCanvasNamesAndIds();
+  const { fetchCanvas, isLoading, canvasIdsAndNames } = useCanvasNamesAndIds();
+  const {verify} = useUserStore()
 
   useEffect(() => {
-    if (
-      !useCloudCanvasUserStore.getState().isUserAuthenticated &&
-      typeof cookie !== "string" &&
-      typeof useCloudCanvasUserStore.getState().userName !== "string"
-    ) {
-      navigate("/signin");
-    }
+    
 
     (async () => {
-      await fetchCanvas({ authCookie: cookie! });
+      await fetchCanvas();
+      await verify()
     })();
 
     document.title = "Cloud Canvas - Dashboard"
@@ -44,7 +40,7 @@ export default function Dashboard() {
   }
 
   if (
-    useCloudCanvasCanvasNamesAndIds.getState().canvasIdsAndNames.length === 0
+    useCanvasNamesAndIds.getState().canvasIdsAndNames.length === 0
   ) {
     return (
       <div className="flex justify-center items-center min-h-[30vh]">
@@ -70,7 +66,7 @@ export default function Dashboard() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {useCloudCanvasCanvasNamesAndIds
+        {useCanvasNamesAndIds
           .getState()
           .canvasIdsAndNames.map((canvas, index) => (
             <TableRow

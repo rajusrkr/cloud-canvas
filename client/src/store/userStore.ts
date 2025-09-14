@@ -1,5 +1,4 @@
 import { BACKEND_URI } from "@/utils/config"
-import Cookies from "js-cookie"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -12,9 +11,11 @@ interface CanvasIdsAndName {
     isUserAuthenticated: boolean,
     userName: null | string,
     // signin func
-    signin: ({ email, password }: { email: string, password: string }) => Promise<void>
+    signin: ({ email, password, navigate }: { email: string, password: string, navigate:  (path: string) => void }) => Promise<void>
     // Verify user
     verify: () => Promise<void>
+    // Verify otp
+    verifyOtp: ({otp, navigate}:{otp:string, navigate: (path: string) => void}) => Promise<void>
 }
 
 const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
@@ -23,7 +24,7 @@ const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
     errorMessage: null,
     isUserAuthenticated: false,
     userName: null,
-    signin: async ({ email, password }) => {
+    signin: async ({ email, password, navigate }) => {
         set({ isLoading: true, isError: false, errorMessage: null, isUserAuthenticated: false, userName: null })
         const data = {
             email,
@@ -40,13 +41,8 @@ const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
             });
             const res = await sendReq.json()
             if (res.success) {
-                set({ isLoading: false, isUserAuthenticated: true, userName: res.username })
-                Cookies.set("canvas_cloud_auth", res.token, {
-                    secure: true,
-                    domain: "cloud-canvas.vercel.app",
-                    expires: 5 * 60 * 1000,
-                    sameSite: "Lax",
-                });
+                set({ isLoading: false })
+                navigate("/signin/otp-verify")
             } else {
                 set({ isLoading: false, isError: true, errorMessage: res.message })
             }
@@ -73,6 +69,33 @@ const useUserStore = create(persist<CanvasIdsAndName>((set) => ({
                 set({ isUserAuthenticated: false })
             } else {
                 set({ isUserAuthenticated: true })
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
+    verifyOtp: async({otp, navigate}) => {
+        try {
+            set({isLoading: true, isError: false, errorMessage:null});
+
+            const sendReq = await fetch(`${BACKEND_URI}/api/v1/user/otp-verify`, {
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({otp})
+            })
+
+            const res = await sendReq.json();
+
+            if (res.success) {
+                set({isLoading: false, userName: res.user, isUserAuthenticated: true})
+                navigate(`/dashboard/${useUserStore.getState().userName}`)
+            } else {
+                set({isLoading: false, isError: true, errorMessage: res.message})
             }
 
         } catch (error) {

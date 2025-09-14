@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken"
 
-export default function otpVerifyTokenSession(req: Request, res: Response, next: NextFunction) {
-    const cookie = req.cookies.otpVerifyToken
+export default function otpVerifyTokenSession(req: Request, res: any, next: NextFunction) {
+    const cookie = req.cookies;
+
+
+
 
     if (!cookie) {
-        return res.status(401).json({ success: false, message: "Invalid cookie session." })
+        return res.status(401).json({ success: false, message: "Invalid session, try again." })
     }
 
     try {
@@ -13,7 +16,15 @@ export default function otpVerifyTokenSession(req: Request, res: Response, next:
         //@ts-ignore
         const userId = decode.userId;
         // @ts-ignore
-        req.userId = userId
+        req.userId = userId;
+        // @ts-ignore
+        const otpId = decode.otpId;
+        //@ts-ignore
+        req.otpId = otpId;
+        // @ts-ignore
+        const user = decode.user;
+        // @ts-ignore
+        req.user = user
         return next()
     } catch (error) {
         console.log(error);

@@ -31,7 +31,6 @@ const signin = async (req: Request, res: any) => {
 
         for (let i = 0; i < 6; i++) {
           const index = Math.floor(Math.random() * randomString.length);
-          console.log(index);
 
           otp += randomString[index]
         }
@@ -45,7 +44,7 @@ const signin = async (req: Request, res: any) => {
       const hashedOtp = bcrypt.hashSync(otp, 10);
       const addFiveMin = 5 * 60 * 1000;
 
-      await OTP.create({
+      const createOtp = await OTP.create({
         otp: hashedOtp,
         otpFor: dbUser.id,
         expiry: Date.now() + addFiveMin,
@@ -54,7 +53,7 @@ const signin = async (req: Request, res: any) => {
       })
 
       // verify cookie
-      const otpVerifyToken = jwt.sign({ userId: dbUser._id }, `${process.env.JWT_SECRET_SESSION}`)
+      const otpVerifyToken = jwt.sign({ userId: dbUser._id, user: dbUser.username, otpId: createOtp._id }, `${process.env.JWT_SECRET_SESSION}`)
 
       res.cookie("otpVerifyToken", otpVerifyToken)
       return res.status(200).json({ success: true, message: "Signin otp generated successfully" })
@@ -71,10 +70,10 @@ const signin = async (req: Request, res: any) => {
 // verify user session
 const verify = async (req: Request, res: any) => {
   const data = req.body;
-  const userName = data.userName
+  const userName = data.userName;
 
   // @ts-ignore
-  const userId = req.userId
+  const userId = req.user;
 
   try {
     const findUser = await User.findOne({ _id: userId, username: userName })
@@ -94,12 +93,15 @@ const otpVerify = async (req: Request, res: any) => {
   const data = req.body;
   // @ts-ignore
   const userId = req.userId
-console.log(userId);
+  //@ts-ignore
+  const otpId = req.otpId;
+  //@ts-ignore
+  const user = req.user;
 
-  try { 
+  try {
     // Delete prev used and expired otps
-    await OTP.deleteMany({isUsed: true})
-    await OTP.deleteMany({isExpired: true})
+    await OTP.deleteMany({ isUsed: true })
+    await OTP.deleteMany({ isExpired: true })
 
     /**
      * Steps to verify otp
@@ -110,13 +112,53 @@ console.log(userId);
      * if correct return the auth token
      */
 
-    const findOtp = await OTP.findById(data.otpId)
+    const findOtp = await OTP.findOne({ otpFor: userId, _id: otpId })
 
-    console.log(findOtp);
+    if (!findOtp) {
+      return res.status(401).json({ success: false, message: "Invalid or wrong otp." })
+    }
+
+
+    if (findOtp.isUsed) {
+      return res.status(401).json({ success: false, message: "This otp is alreday been used" })
+    }
+
+    if (findOtp.isExpired) {
+      return res.status(401).json({ success: false, message: "The otp has expired" })
+    }
+
+    const currentTime = Date.now()
+
+    if (currentTime > findOtp.expiry) {
+      await OTP.findByIdAndDelete(otpId);
+      return res.status(401).json({ success: false, message: "This is a expired otp" })
+    }
+
+
+    // Verify
+    const dbOtp = findOtp.otp;
+    const verify = bcrypt.compareSync(data.otp, dbOtp);
+
+    if (!verify) {
+      return res.status(401).json({ success: false, message: "Wrong otp" })
+    }
+
+    await OTP.findByIdAndUpdate(otpId, { isUsed: true })
+
+    const authToken = jwt.sign({ user: findOtp.otpFor }, `${process.env.JWT_SECRET_SESSION}`)
+
+    res.cookie("ccSession", authToken, {
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: "strict"
+    })
+
+    return res.status(200).json({ success: true, message: "Otp verification success", user })
 
   } catch (error) {
-
+    console.log("Error");
+    return res.status(500).json({ success: false, message: "Internal server error" })
   }
 }
 
-export { signin, verify }
+export { signin, verify, otpVerify }

@@ -8,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCloudCanvasCanvasNamesAndIds } from "@/store/canvas_store";
 import {
   EllipsisVertical,
   ExternalLink,
@@ -26,6 +25,7 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { useCanvasNamesAndIds } from "@/store/canvasStore";
 
 export default function DashboardActionButton({
   canvasId,
@@ -37,7 +37,7 @@ export default function DashboardActionButton({
   authCookie: string;
 }) {
   const navigate = useNavigate();
-  const { editCanvasName, deleteCanvas } = useCloudCanvasCanvasNamesAndIds();
+  const { editCanvasName, deleteCanvas } = useCanvasNamesAndIds();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -106,7 +106,7 @@ export default function DashboardActionButton({
             />
           </div>
           <div>
-            {useCloudCanvasCanvasNamesAndIds.getState().isEditingName ? (
+            {useCanvasNamesAndIds.getState().isEditingName ? (
               <Button className="w-full hover:cursor-pointer" disabled={true}>
                 <Loader className="animate-spin" />
               </Button>
@@ -116,7 +116,7 @@ export default function DashboardActionButton({
                 onClick={async () => {
                   await editCanvasName({ id: canvasId, newName, authCookie });
                   if (
-                    useCloudCanvasCanvasNamesAndIds.getState()
+                    useCanvasNamesAndIds.getState()
                       .isNameEditingSuccess
                   ) {
                     setDialogOpen(false);

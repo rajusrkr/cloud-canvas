@@ -1,7 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import Cookies from "js-cookie";
 import { BACKEND_URI } from "@/utils/config";
 import { FilePlus, Loader, SquareChevronRight } from "lucide-react";
 import {useState} from "react"
@@ -19,7 +18,6 @@ export default function Header() {
 
   const [loading, setLoading] = useState(false)
 
-  const cookie = Cookies.get("canvas_cloud_auth");
 
   // for dashboard layout
   if (currentPath.pathname === `/dashboard/${params.userId}`) {
@@ -33,26 +31,26 @@ export default function Header() {
             <Button
               className="rounded-full items-center font-bold hover:cursor-pointer w-40"
               onClick={async () => {
-                try {
-                  setLoading(true)
-                  const sendReq = await fetch(
-                    `${BACKEND_URI}/api/v1/canvas/create`,
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `${cookie}`,
-                      },
-                    }
-                  );
-                  const res = await sendReq.json();
-                  if (res.success) {
-                    setLoading(false)
-                    navigate(`/canvas/${res.canvasId}`);
-                  }
-                } catch (error) {
-                  console.log(error);
-                }
+                // try {
+                //   setLoading(true)
+                //   const sendReq = await fetch(
+                //     `${BACKEND_URI}/api/v1/canvas/create`,
+                //     {
+                //       method: "POST",
+                //       headers: {
+                //         "Content-Type": "application/json",
+                //         Authorization: `${cookie}`,
+                //       },
+                //     }
+                //   );
+                //   const res = await sendReq.json();
+                //   if (res.success) {
+                //     setLoading(false)
+                //     navigate(`/canvas/${res.canvasId}`);
+                //   }
+                // } catch (error) {
+                //   console.log(error);
+                // }
               }}
             >
               {
@@ -75,7 +73,7 @@ export default function Header() {
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Button variant={"destructive"}
                     onClick={() => {
-                      Cookies.remove("canvas_cloud_auth")
+                      // Cookies.remove("canvas_cloud_auth")
                       navigate("/")
                     }}
                     

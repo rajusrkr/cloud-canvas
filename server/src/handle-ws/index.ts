@@ -52,10 +52,7 @@ function ws() {
         ws.on("message", async (msg) => {
             const data = JSON.parse(msg.toString());
             try {
-                console.log("going for update");
                 await Canvas.findByIdAndUpdate(data.canvasId, { canvasElements: data.data })
-                console.log("update done");
-
             } catch (error) {
                 console.log(error);
             }
