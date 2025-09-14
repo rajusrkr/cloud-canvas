@@ -59,7 +59,7 @@ const signin = async (req: Request, res: any) => {
         httpOnly: true,
         maxAge: 15 * 60 * 1000,
         secure: true,
-        domain: ".onrender.com",
+        domain: "onrender.com",
         sameSite: "none"
       })
       return res.status(200).json({ success: true, message: "Signin otp generated successfully" })
