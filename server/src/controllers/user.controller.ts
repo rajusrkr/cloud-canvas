@@ -59,7 +59,7 @@ const signin = async (req: Request, res: any) => {
         domain: 'onrender.com',
         path: '/',
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         httpOnly: true
       })
       return res.status(200).json({ success: true, message: "Signin otp generated successfully" })
