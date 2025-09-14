@@ -56,9 +56,11 @@ const signin = async (req: Request, res: any) => {
       const otpVerifyToken = jwt.sign({ userId: dbUser._id, user: dbUser.username, otpId: createOtp._id }, `${process.env.JWT_SECRET_SESSION}`)
 
       res.cookie("otpVerifyToken", otpVerifyToken, {
+        httpOnly: true,
         maxAge: 15 * 60 * 1000,
         secure: true,
-        sameSite: "strict"
+        domain: ".onrender.com",
+        sameSite: "none"
       })
       return res.status(200).json({ success: true, message: "Signin otp generated successfully" })
     }
