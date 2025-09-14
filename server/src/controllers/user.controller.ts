@@ -56,10 +56,10 @@ const signin = async (req: Request, res: any) => {
       const otpVerifyToken = jwt.sign({ userId: dbUser._id, user: dbUser.username, otpId: createOtp._id }, `${process.env.JWT_SECRET_SESSION}`)
 
       res.cookie("otpVerifyToken", otpVerifyToken, {
-       'expires': 15 * 60 * 1000,
+        'maxAge': 15 * 60 * 1000,
         'path': '/',
         'domain': '.onrender.com',
-        'secure':  true,
+        'secure': true,
         'httponly': true,
         'samesite': 'Lax',
       })
