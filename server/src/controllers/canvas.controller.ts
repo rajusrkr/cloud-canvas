@@ -4,7 +4,7 @@ import { Canvas } from "../db/models/canvas.model";
 // create a new canvas
 const create = async (req: Request, res: any) => {
   //@ts-ignore
-  const user = req.userId;
+  const user = req.user;
 
   try {
     const createNewCanvas = await Canvas.create({
