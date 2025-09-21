@@ -114,7 +114,7 @@ export default function DashboardActionButton({
               <Button
                 className="w-full hover:cursor-pointer"
                 onClick={async () => {
-                  await editCanvasName({ id: canvasId, newName, authCookie });
+                  await editCanvasName({ id: canvasId, newName });
                   if (
                     useCanvasNamesAndIds.getState()
                       .isNameEditingSuccess

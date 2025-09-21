@@ -25,11 +25,9 @@ interface CanvasNamesAndIds {
   editCanvasName: ({
     id,
     newName,
-    authCookie,
   }: {
     id: string;
     newName: string;
-    authCookie: string;
   }) => Promise<void>;
   // delete canvas
   deleteCanvas: ({
@@ -88,7 +86,7 @@ const useCanvasNamesAndIds = create(
           });
         }
       },
-      editCanvasName: async ({ id, newName, authCookie }) => {
+      editCanvasName: async ({ id, newName }) => {
         set({
           isEditingName: true,
           isError: false,
@@ -107,8 +105,8 @@ const useCanvasNamesAndIds = create(
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: authCookie,
               },
+              credentials: "include",
               body: JSON.stringify({ data }),
             }
           );
