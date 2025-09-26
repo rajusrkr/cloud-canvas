@@ -8,6 +8,7 @@ import {
   useDisclosure,
   Form,
   Input,
+  addToast,
 } from "@heroui/react";
 import {
   Table,
@@ -130,7 +131,7 @@ export function EditTitleModal({
   const { editCanvasName, isEditingName, isError, errorMessage } =
     useCanvasStore();
   const [newCanvasTitle, setNewCanvasTitle] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
@@ -153,7 +154,7 @@ export function EditTitleModal({
                     await editCanvasName({
                       newName: newCanvasTitle,
                       id: canvasId,
-                      navigate
+                      navigate,
                     });
                     onClose();
                   }}
@@ -218,8 +219,7 @@ export function DeleteCanvas({
   const { deleteCanvas, isCanvasDeleting, isError, errorMessage } =
     useCanvasStore();
 
-
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
@@ -289,10 +289,10 @@ export function CreateNewCanvasModal() {
   const [canvasTitle, setCanvasTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("")
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const {fetchCanvas, canvasIdsAndNames} = useCanvasStore()
-  const {logout} = useUserStore()
+  const { fetchCanvas, canvasIdsAndNames } = useCanvasStore();
+  const { logout } = useUserStore();
 
   return (
     <div>
@@ -320,10 +320,16 @@ export function CreateNewCanvasModal() {
                   onSubmit={async (e) => {
                     e.preventDefault();
 
-                    if (canvasIdsAndNames.find((canvas) => canvas.canvasName.toLowerCase() === canvasTitle.toLowerCase())) {
-                      setIsError(true)
-                      setErrorMessage("Canvas with same title already exists")
-                      return
+                    if (
+                      canvasIdsAndNames.find(
+                        (canvas) =>
+                          canvas.canvasName.toLowerCase() ===
+                          canvasTitle.toLowerCase()
+                      )
+                    ) {
+                      setIsError(true);
+                      setErrorMessage("Canvas with same title already exists");
+                      return;
                     }
 
                     try {
@@ -341,13 +347,18 @@ export function CreateNewCanvasModal() {
                       );
                       const res = await sendReq.json();
                       if (res.success) {
-                        await fetchCanvas({navigate})
+                        await fetchCanvas({ navigate });
                         setIsLoading(false);
                         navigate(`/canvas/${res.canvasId}`);
                       } else if (res.message === "JsonWebTokenError") {
                         setIsLoading(false);
-                        useCanvasStore.setState({canvasIdsAndNames: []})
-                        await logout({navigate})
+                        useCanvasStore.setState({ canvasIdsAndNames: [] });
+                        await logout({ navigate });
+                        addToast({
+                          title: "You have been loged out",
+                          description: res.message,
+                          color: "warning",
+                        });
                       } else {
                         setIsLoading(false);
                         console.log(res);
@@ -367,7 +378,9 @@ export function CreateNewCanvasModal() {
                     defaultValue={canvasTitle}
                     onChange={(e) => setCanvasTitle(e.target.value)}
                   />
-                  <p className="text-sm font-semibold text-red-500">{isError && errorMessage}</p>
+                  <p className="text-sm font-semibold text-red-500">
+                    {isError && errorMessage}
+                  </p>
                   <Button
                     type="submit"
                     size="sm"
@@ -375,9 +388,13 @@ export function CreateNewCanvasModal() {
                     variant="flat"
                   >
                     <span className="flex items-center gap-1">
-                      {
-                        isLoading ? (<CustomLoader height={1} width={1}/>) : (<>Create new canvas <ArrowUpRight size={16} /></>)
-                      }
+                      {isLoading ? (
+                        <CustomLoader height={1} width={1} />
+                      ) : (
+                        <>
+                          Create new canvas <ArrowUpRight size={16} />
+                        </>
+                      )}
                     </span>
                   </Button>
                 </Form>

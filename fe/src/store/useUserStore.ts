@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { BACKEND_URI } from "../lib/utils"
 import { useCanvasStore } from "./useCanvasStore"
+import { addToast } from "@heroui/react"
 
 
 interface UserStoreStates {
@@ -80,7 +81,7 @@ const useUserStore = create(persist<UserStoreStates>((set) => ({
                 navigate(`/dashboard`)
             } else if (res.message === "JsonWebTokenError") {
                 set({ isLoading: false, isCredentialsCorrect: false })
-                await useUserStore.getState().logout({navigate})
+                await useUserStore.getState().logout({ navigate })
             }
             else {
                 set({ isLoading: false, isError: true, errorMessage: res.message })
@@ -105,14 +106,28 @@ const useUserStore = create(persist<UserStoreStates>((set) => ({
                 set({ isLoggingOut: false, isUserAuthenticated: false, userName: null })
                 useCanvasStore.setState({ canvasIdsAndNames: [] })
                 navigate("/")
+                addToast({
+                    title: "You have been loged out",
+                    description: res.message,
+                    color: "warning",
+                });
             }
             else if (res.message === "JsonWebTokenError") {
                 set({ isLoggingOut: false, isUserAuthenticated: false, isCredentialsCorrect: false, userName: null })
                 useCanvasStore.setState({ canvasIdsAndNames: [] })
                 navigate("/")
+                addToast({
+                    title: "You have been loged out with error",
+                    description: res.message,
+                    color: "warning",
+                });
             }
             else {
-                set({ isLoggingOut: false, isError: true, errorMessage: res.message, isUserAuthenticated: false, isCredentialsCorrect: false, userName: null })
+                addToast({
+                    title: "Error",
+                    description: res.message,
+                    color: "warning",
+                });
             }
 
         } catch (error) {

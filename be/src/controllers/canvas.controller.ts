@@ -127,12 +127,13 @@ const fetch = async (req: Request, res: any) => {
       console.log("Invalid session");
       return res.status(401).json({ success: false, message: "JsonWebTokenError" })
     }
-    const getCanvas = await Canvas.findOne({_id: urlParams.canvasId, canvasCreatedBy: user}).select("-canvasCreatedBy -createdAt")
+    const getCanvas = await Canvas.findOne({ _id: urlParams.canvasId, canvasCreatedBy: user }).select("-canvasCreatedBy -createdAt")
+
     if (!getCanvas) {
-      return res.status({
+      return res.status(401).json({
         success: false,
         message: "Invalid canvas id or invalid session, try by login again",
-      });
+      })
     }
     return res.status(200).json({
       success: true,

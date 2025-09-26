@@ -21,7 +21,7 @@ interface CanvasNamesAndIds {
     errorMessage: null | string;
     canvasIdsAndNames: CanvasNameAndId[];
     // fetch all canvases
-    fetchCanvas: ({navigate} : {navigate: (path: string) => void}) => Promise<void>;
+    fetchCanvas: ({ navigate }: { navigate: (path: string) => void }) => Promise<void>;
     // edit canvas title
     editCanvasName: ({
         id,
@@ -55,7 +55,7 @@ const useCanvasStore = create(
             isCanvasDeleted: false,
             isCanvasDeleting: false,
             canvasIdsAndNames: [],
-            fetchCanvas: async ({navigate}) => {
+            fetchCanvas: async ({ navigate }) => {
                 set({ isLoading: true, isError: false, errorMessage: null });
 
                 try {
@@ -77,7 +77,7 @@ const useCanvasStore = create(
                     else if (res.message === "JsonWebTokenError") {
                         useUserStore.setState({ isUserAuthenticated: false, isCredentialsCorrect: false })
                         set({ isLoading: false, errorMessage: res.message, isError: true, canvasIdsAndNames: [] })
-                        await useUserStore.getState().logout({navigate})
+                        await useUserStore.getState().logout({ navigate })
                     }
                     else {
                         set({
@@ -138,7 +138,7 @@ const useCanvasStore = create(
                     }
                     else if (res.message === "JsonWebTokenError") {
                         set({ isError: true, errorMessage: res.message, isEditingName: false, canvasIdsAndNames: [] })
-                        await useUserStore.getState().logout({navigate})
+                        await useUserStore.getState().logout({ navigate })
                     }
                     else {
                         set({
@@ -187,7 +187,7 @@ const useCanvasStore = create(
                     }
                     else if (res.message === "JsonWebTokenError") {
                         set({ isError: true, errorMessage: res.message, isCanvasDeleting: false, canvasIdsAndNames: [] })
-                        await useUserStore.getState().logout({navigate})
+                        await useUserStore.getState().logout({ navigate })
                     }
                     else {
                         set({ isCanvasDeleting: false, isError: true, errorMessage: res.message })

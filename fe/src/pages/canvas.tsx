@@ -7,7 +7,7 @@ import { LogOut, PanelRight } from "lucide-react";
 import { useUserStore } from "../store/useUserStore";
 import { BACKEND_URI } from "../lib/utils";
 import { useCanvasStore } from "../store/useCanvasStore";
-import { Button, Listbox, ListboxItem } from "@heroui/react";
+import { addToast, Button, Listbox, ListboxItem } from "@heroui/react";
 import CustomLoader from "../components/custom-loader";
 import { CreateNewCanvasModal } from "../components/canvas-list-table";
 
@@ -25,6 +25,11 @@ const Canvas = () => {
   const { isUserAuthenticated, logout } = useUserStore();
 
   useEffect(() => {
+    if (!isUserAuthenticated) {
+      navigate("/signin");
+      return;
+    }
+
     (async () => {
       try {
         setLoading(true);
@@ -43,10 +48,20 @@ const Canvas = () => {
           setCurrentCanvasName(res.canvasElements.canvasName);
           document.title = `Cloud Canvas - ${res.canvasElements.canvasName}`;
           setLoading(false);
-        } else if(res.message==="JsonWebTokenError"){
-          await logout({navigate})
+        } else if (res.message === "JsonWebTokenError") {
+          await logout({ navigate });
+          addToast({
+            title: "Error",
+            description: res.message,
+            color: "warning",
+          });
         } else {
-          console.log(res);
+          navigate("/dashboard");
+          addToast({
+            title: "Error",
+            description: res.message,
+            color: "warning",
+          });
         }
       } catch (error) {
         console.log(error);
@@ -108,11 +123,6 @@ const Canvas = () => {
     );
   }
 
-  if (!isUserAuthenticated) {
-    navigate("/signin");
-    return;
-  }
-
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
       <Excalidraw
@@ -165,6 +175,9 @@ const Canvas = () => {
               color="danger"
               className="font-semibold w-full"
               variant="flat"
+              onPress={async () => {
+                await logout({ navigate });
+              }}
             >
               Logout
               <LogOut size={14} />
