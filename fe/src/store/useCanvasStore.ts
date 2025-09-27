@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { BACKEND_URI } from "../lib/utils";
 import { useUserStore } from "./useUserStore";
 
 interface CanvasNameAndId {
@@ -60,7 +59,7 @@ const useCanvasStore = create(
 
                 try {
                     const sendReq = await fetch(
-                        `${BACKEND_URI}/api/v1/canvas/get-all-canvas`,
+                        `/api/v1/canvas/get-all-canvas`,
                         {
                             method: "GET",
                             headers: {
@@ -111,7 +110,7 @@ const useCanvasStore = create(
                 };
                 try {
                     const sendReq = await fetch(
-                        `${BACKEND_URI}/api/v1/canvas/edit-name`,
+                        `/api/v1/canvas/edit-name`,
                         {
                             method: "PUT",
                             headers: {
@@ -167,7 +166,7 @@ const useCanvasStore = create(
 
                 try {
                     const sendReq = await fetch(
-                        `${BACKEND_URI}/api/v1/canvas/delete?canvasId=${canvasId}`,
+                        `/api/v1/canvas/delete?canvasId=${canvasId}`,
                         {
                             method: "DELETE",
                             credentials: "include"

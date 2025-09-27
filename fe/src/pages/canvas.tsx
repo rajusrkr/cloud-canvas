@@ -5,7 +5,6 @@ import { isEqual } from "lodash";
 import { Link, useNavigate, useParams } from "react-router";
 import { LogOut, PanelRight } from "lucide-react";
 import { useUserStore } from "../store/useUserStore";
-import { BACKEND_URI } from "../lib/utils";
 import { useCanvasStore } from "../store/useCanvasStore";
 import { addToast, Button, Listbox, ListboxItem } from "@heroui/react";
 import CustomLoader from "../components/custom-loader";
@@ -34,7 +33,7 @@ const Canvas = () => {
       try {
         setLoading(true);
         const sendReq = await fetch(
-          `${BACKEND_URI}/api/v1/canvas/fetch?canvasId=${params.id}`,
+          `/api/v1/canvas/fetch?canvasId=${params.id}`,
           {
             method: "PUT",
             credentials: "include",
@@ -68,7 +67,7 @@ const Canvas = () => {
       }
     })();
 
-    const wss = new WebSocket("ws://localhost:8080");
+    const wss = new WebSocket(`ws://${window.location.host}/ws`);
     if (socketRef.current !== null) return;
 
     wss.onopen = () => {

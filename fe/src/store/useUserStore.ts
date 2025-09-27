@@ -1,6 +1,5 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { BACKEND_URI } from "../lib/utils"
 import { useCanvasStore } from "./useCanvasStore"
 import { addToast } from "@heroui/react"
 
@@ -41,7 +40,7 @@ const useUserStore = create(persist<UserStoreStates>((set) => ({
             password
         }
         try {
-            const sendReq = await fetch(`${BACKEND_URI}/api/v1/user/signin`, {
+            const sendReq = await fetch(`/api/v1/user/signin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -65,7 +64,7 @@ const useUserStore = create(persist<UserStoreStates>((set) => ({
         try {
             set({ isLoading: true, isError: false, errorMessage: null });
 
-            const sendReq = await fetch(`${BACKEND_URI}/api/v1/user/otp-verify`, {
+            const sendReq = await fetch(`/api/v1/user/otp-verify`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -95,7 +94,7 @@ const useUserStore = create(persist<UserStoreStates>((set) => ({
     logout: async ({ navigate }) => {
         try {
             set({ isLoggingOut: true, isError: false, errorMessage: null })
-            const sendReq = await fetch(`${BACKEND_URI}/api/v1/user/handle-session`, {
+            const sendReq = await fetch(`/api/v1/user/handle-session`, {
                 method: "DELETE",
                 credentials: "include"
             })

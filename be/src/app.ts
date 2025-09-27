@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(
   cors({
-    origin: ["https://cloud-canvas.vercel.app","https://cloud-canvas-ybpm.onrender.com", "http://localhost:5173", "http://localhost:5174"],
+    origin: ["https://cloud-canvas.vercel.app","https://cloud-canvas-ybpm.onrender.com", "http://localhost:5173", "http://localhost:5174", "http://localhost"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -30,7 +30,7 @@ export const wss = new WebSocketServer({ server });
 
 db()
   .then(() => {
-    server.listen(PORT, () => {
+    server.listen(8080,"0.0.0.0", () => {
       console.log(`Server is listening on port: ${PORT}`);
     });
     ws()

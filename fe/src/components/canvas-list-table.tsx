@@ -24,7 +24,6 @@ import { ArrowUpRight, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import CustomLoader from "./custom-loader";
-import { BACKEND_URI } from "../lib/utils";
 import { useUserStore } from "../store/useUserStore";
 
 export const DeleteIcon = (props: any) => {
@@ -335,7 +334,7 @@ export function CreateNewCanvasModal() {
                     try {
                       setIsLoading(true);
                       const sendReq = await fetch(
-                        `${BACKEND_URI}/api/v1/canvas/create`,
+                        `/api/v1/canvas/create`,
                         {
                           method: "POST",
                           headers: {
