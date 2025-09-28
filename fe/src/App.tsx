@@ -4,6 +4,7 @@ import DashboardLayout from "./layout/dashboard-layout";
 import Dashboard from "./pages/dashboard";
 import Landing from "./pages/landing";
 import Canvas from "./pages/canvas";
+import NotFoundPage from "./pages/404notfound";
 
 export default function App() {
   return (
@@ -12,8 +13,11 @@ export default function App() {
         {/* Signin */}
         <Route>
           <Route path="/signin" element={<Signin />} />
-          <Route path="/" element = {<Landing />}/>
-          <Route path="/canvas/:id" element = {<Canvas />}/>
+          <Route path="/" element={<Landing />} />
+          <Route path="/canvas/:id" element={<Canvas />} />
+
+          {/* Unknow route aka 404 not found */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
         {/* Dashboard and canvas */}
         <Route element={<DashboardLayout />}>
